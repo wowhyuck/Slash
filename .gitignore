@@ -509,3 +509,5 @@ FodyWeavers.xsd
 
 # List of ignored Unreal folders
 Content/StarterContent/
+Content/Megascans/
+Content/MSPresets/
