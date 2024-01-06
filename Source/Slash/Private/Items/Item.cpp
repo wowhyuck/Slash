@@ -2,6 +2,8 @@
 
 
 #include "Items/Item.h"
+#include "DrawDebugHelpers.h"
+#include "Slash/Slash.h"
 
 AItem::AItem()
 {
@@ -18,6 +20,14 @@ void AItem::BeginPlay()
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(1, 60.f, FColor::Cyan, FString("Item OnScreen Message!"));
+	}
+
+	UWorld* World = GetWorld();
+
+	if (World)
+	{
+		FVector Location = GetActorLocation();
+		DrawDebugSphere(World, Location, 25.f, 24, FColor::Red, false, 30.f);
 	}
 }
 
