@@ -27,7 +27,10 @@ void AItem::BeginPlay()
 	if (World)
 	{
 		FVector Location = GetActorLocation();
-		DrawDebugSphere(World, Location, 25.f, 24, FColor::Red, false, 30.f);
+		//DrawDebugSphere(World, Location, 25.f, 24, FColor::Red, false, 30.f);
+
+		FVector Forward = GetActorForwardVector();
+		DrawDebugLine(World, Location, Location + Forward * 100.f, FColor::Red, true, -1.f, 0, 1.f);
 	}
 }
 
