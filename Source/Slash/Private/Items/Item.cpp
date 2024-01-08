@@ -31,6 +31,8 @@ void AItem::BeginPlay()
 
 		FVector Forward = GetActorForwardVector();
 		DrawDebugLine(World, Location, Location + Forward * 100.f, FColor::Red, true, -1.f, 0, 1.f);
+
+		DrawDebugPoint(World, Location + Forward * 100.f, 15.f, FColor::Red, true);
 	}
 }
 
