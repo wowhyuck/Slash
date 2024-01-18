@@ -43,6 +43,15 @@ void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Movement rate in units of cm/s
+	float MovementRate = 50.f;
+	float RotationRate = 45.f;
+
+	// MovementRate(cm/s) * DeltaTime(s/frame) = (cm/frame)
+	AddActorWorldOffset(FVector(MovementRate * DeltaTime, 0.f, 0.f));
+	AddActorWorldRotation(FRotator(0.f, RotationRate * DeltaTime, 0.f));
+	DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 12, FColor::Red, false, -1.f);
+
 	UE_LOG(LogTemp, Warning, TEXT("DeltaTime : %f"), DeltaTime);
 
 	if (GEngine)
