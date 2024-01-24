@@ -20,6 +20,14 @@ protected:
 
 private:
 	float RunningTime;
+
+	//UPROPERTY(EditDefaultsOnly) : can edit variables in a blueprint only
+	//UPROPERTY(EditInstanceOnly) : can edit variables in details of instance only
+	//UPROPERTY(EditAnywhere) : can edit variables in a blueprint or details of instance both
+
+	UPROPERTY(EditDefaultsOnly)
 	float Amplitude = 0.25f;
+
+	UPROPERTY(EditInstanceOnly)
 	float TimeConstant = 5.f;
 };
