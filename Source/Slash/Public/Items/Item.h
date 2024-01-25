@@ -19,11 +19,16 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	//UPROPERTY(VisibleDefaultsOnly) : can see variables in a blueprint only, but you can see its default value
+	//UPROPERTY(VisibleInstanceOnly) : can see variables in details of instance only, and you can see its value in real time
+	//UPROPERTY(VisibleAnywhere) : can see variables in a blueprint and details of instance
+
+	UPROPERTY(VisibleAnywhere)
 	float RunningTime;
 
 	//UPROPERTY(EditDefaultsOnly) : can edit variables in a blueprint only
 	//UPROPERTY(EditInstanceOnly) : can edit variables in details of instance only
-	//UPROPERTY(EditAnywhere) : can edit variables in a blueprint or details of instance both
+	//UPROPERTY(EditAnywhere) : can edit variables in a blueprint and details of instance
 
 	UPROPERTY(EditDefaultsOnly)
 	float Amplitude = 0.25f;
