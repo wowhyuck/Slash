@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -18,21 +18,28 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-private:
-	//UPROPERTY(VisibleDefaultsOnly) : can see variables in a blueprint only, but you can see its default value
-	//UPROPERTY(VisibleInstanceOnly) : can see variables in details of instance only, and you can see its value in real time
-	//UPROPERTY(VisibleAnywhere) : can see variables in a blueprint and details of instance
-
-	UPROPERTY(VisibleAnywhere)
-	float RunningTime;
-
-	//UPROPERTY(EditDefaultsOnly) : can edit variables in a blueprint only
-	//UPROPERTY(EditInstanceOnly) : can edit variables in details of instance only
-	//UPROPERTY(EditAnywhere) : can edit variables in a blueprint and details of instance
-
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sine Parameters")
 	float Amplitude = 0.25f;
 
-	UPROPERTY(EditInstanceOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine Parameters")
 	float TimeConstant = 5.f;
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float RunningTime;
+
+	// ------ Property Specifiers(프로퍼티 지정자) ----- //
+	// EditDefaultsOnly : can edit a variable in a blueprint only.
+	// EditInstanceOnly : can edit a variable in details of instance only.
+	// EditAnywhere : can edit a variable in a blueprint and details of instance.
+	// VisibleDefaultsOnly : can see a variable in a blueprint only, but you can see its default value.
+	// VisibleInstanceOnly : can see a variable in details of instance only, and you can see its value in real time.
+	// VisibleAnywhere : can see a variable in a blueprint and details of instance.
+	//
+	// BlueprintReadOnly : can use a getter of a variable in an Event Graph, but the variable is not private.
+	// BlueprintReadWrite : can use a getter and a setter of a variable in a Event Granph, but the variable is not private.
+	// 
+	// Category : can put a variable to category where you set.
+	//
+	// meta = (AllowPrivateAccess = "true") : can use a variable with BlueprintReadOnly and BlueprintReadWrite, though the variable is private. 
+	// ------------------------------------------------ //
 };
