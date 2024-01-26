@@ -23,11 +23,19 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine Parameters")
 	float TimeConstant = 5.f;
+
+	UFUNCTION(BlueprintCallable)
+	float TransformedSin(float Value);
+
+	UFUNCTION(BlueprintPure)
+	float TransformedCosin();
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float RunningTime;
 
 	// ------ Property Specifiers(프로퍼티 지정자) ----- //
+	// // --- UPROPERTY --- //
 	// EditDefaultsOnly : can edit a variable in a blueprint only.
 	// EditInstanceOnly : can edit a variable in details of instance only.
 	// EditAnywhere : can edit a variable in a blueprint and details of instance.
@@ -41,5 +49,9 @@ private:
 	// Category : can put a variable to category where you set.
 	//
 	// meta = (AllowPrivateAccess = "true") : can use a variable with BlueprintReadOnly and BlueprintReadWrite, though the variable is private. 
+	// // ----------------- //
+	// // --- UFUNCTION --- //
+	// BlueprintCallable : The function can be executed in a Blueprint.
+	// BlueprintPure : The function does not affect the owning object in any way and can be executed in a Blueprint.
 	// ------------------------------------------------ //
 };
