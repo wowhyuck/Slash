@@ -30,6 +30,9 @@ protected:
 	UFUNCTION(BlueprintPure)
 	float TransformedCosin();
 
+	template<typename T>
+	T Avg(T First, T Second);
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float RunningTime;
@@ -55,3 +58,9 @@ private:
 	// BlueprintPure : The function does not affect the owning object in any way and can be executed in a Blueprint.
 	// ------------------------------------------------ //
 };
+
+template<typename T>
+inline T AItem::Avg(T First, T Second)
+{
+	return (First + Second) / 2;
+}
