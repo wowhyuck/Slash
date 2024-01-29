@@ -37,6 +37,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float RunningTime;
 
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* ItemMesh;
+
 	// ------ Property Specifiers(프로퍼티 지정자) ----- //
 	// // --- UPROPERTY --- //
 	// EditDefaultsOnly : can edit a variable in a blueprint only.
