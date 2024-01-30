@@ -111,6 +111,7 @@ Plugins/**/Binaries/*
 Plugins/**/Intermediate/*
 
 Content/StarterContent/
+Content/AnimalVarietyPack/
 
 ### VisualStudio ###
 ## Ignore Visual Studio temporary files, build results, and
