@@ -2,6 +2,8 @@
 
 
 #include "Pawns/Bird.h"
+#include "Components/CapsuleComponent.h"
+
 
 ABird::ABird()
 {
