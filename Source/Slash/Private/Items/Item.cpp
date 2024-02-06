@@ -17,7 +17,7 @@ void AItem::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	UE_LOG(LogTemp, Warning, TEXT("Begin Play Called!"));
+	//UE_LOG(LogTemp, Warning, TEXT("Begin Play Called!"));
 
 	if (GEngine)
 	{
@@ -41,10 +41,10 @@ void AItem::BeginPlay()
 	}
 
 	int32 AvgInt = Avg<int32>(1, 3);
-	UE_LOG(LogTemp, Warning, TEXT("Avg of 1 and 3 : %d"), AvgInt);
+	//UE_LOG(LogTemp, Warning, TEXT("Avg of 1 and 3 : %d"), AvgInt);
 
 	float AvgFloat = Avg<float>(3.45f, 7.86f);
-	UE_LOG(LogTemp, Warning, TEXT("Avg of 3.45 and 7.86 : %f"), AvgFloat);
+	//UE_LOG(LogTemp, Warning, TEXT("Avg of 3.45 and 7.86 : %f"), AvgFloat);
 }
 
 float AItem::TransformedSin(float Value)
@@ -69,7 +69,7 @@ void AItem::Tick(float DeltaTime)
 
 	DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 12, FColor::Red, false, -1.f);
 
-	UE_LOG(LogTemp, Warning, TEXT("DeltaTime : %f"), DeltaTime);
+	//UE_LOG(LogTemp, Warning, TEXT("DeltaTime : %f"), DeltaTime);
 
 	if (GEngine)
 	{
@@ -77,7 +77,7 @@ void AItem::Tick(float DeltaTime)
 		FString Message = FString::Printf(TEXT("Item Name : %s"), *Name);
 		GEngine->AddOnScreenDebugMessage(1, 60.f, FColor::Cyan, Message);
 
-		UE_LOG(LogTemp, Warning, TEXT("Item Name : %s"), *Name);
+		//UE_LOG(LogTemp, Warning, TEXT("Item Name : %s"), *Name);
 
 	}
 }
