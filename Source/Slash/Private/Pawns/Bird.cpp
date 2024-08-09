@@ -38,16 +38,25 @@ void ABird::BeginPlay()
 
 void ABird::MoveForward(float Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Value: %f"), Value);
+	if (Controller && (Value != 0.f))
+	{
+		FVector Forward = GetActorForwardVector();
+		AddMovementInput(Forward, Value);
+	}
 }
 
 void ABird::Move(const FInputActionValue& Value)
 {
-	const bool CurrentValue = Value.Get<bool>();
-	if (CurrentValue)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("IA_Move triggered"));
-	}
+	//FVector2D MovementVector = Value.Get<FVector2D>();
+	//if (Controller != nullptr)
+	//{
+	//	const FRotator Rotation = Controller->GetControlRotation();
+	//	const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+	//	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+	//	AddMovementInput(ForwardDirection, Value.GetMagnitude());
+	//}
 }
 
 void ABird::Tick(float DeltaTime)
@@ -61,11 +70,11 @@ void ABird::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABird::Move);
-	}
+	//if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	//{
+	//	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABird::Move);
+	//}
 
-	//PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ABird::MoveForward);
+	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ABird::MoveForward);
 }
 
