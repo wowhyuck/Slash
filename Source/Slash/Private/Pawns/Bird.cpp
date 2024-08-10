@@ -4,6 +4,8 @@
 #include "Pawns/Bird.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "COmponents/InputComponent.h"
+#include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
 
@@ -47,16 +49,13 @@ void ABird::MoveForward(float Value)
 
 void ABird::Move(const FInputActionValue& Value)
 {
-	//FVector2D MovementVector = Value.Get<FVector2D>();
-	//if (Controller != nullptr)
-	//{
-	//	const FRotator Rotation = Controller->GetControlRotation();
-	//	const FRotator YawRotation(0, Rotation.Yaw, 0);
+	const float DirectionValue = Value.Get<float>();
+	if (Controller && (DirectionValue != 0.f))
+	{
+		FVector Forward = GetActorForwardVector();
+		AddMovementInput(Forward, DirectionValue);
+	}
 
-	//	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-	//	AddMovementInput(ForwardDirection, Value.GetMagnitude());
-	//}
 }
 
 void ABird::Tick(float DeltaTime)
@@ -70,11 +69,11 @@ void ABird::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	//if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
-	//{
-	//	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABird::Move);
-	//}
+	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABird::Move);
+	}
 
-	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ABird::MoveForward);
+	//PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ABird::MoveForward);
 }
 

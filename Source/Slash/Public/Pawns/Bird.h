@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "EnhancedInputComponent.h"
+#include "InputAction.h"
 #include "Bird.generated.h"
 
 class UCapsuleComponent;
