@@ -67,6 +67,13 @@ void ABird::Move(const FInputActionValue& Value)
 
 }
 
+void ABird::Look(const FInputActionValue& Value)
+{
+	const FVector2D LookAxisValue = Value.Get<FVector2D>();
+	AddControllerYawInput(LookAxisValue.X);
+	AddControllerPitchInput(LookAxisValue.Y);
+}
+
 void ABird::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -81,6 +88,7 @@ void ABird::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABird::Move);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABird::Look);
 	}
 
 	//PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ABird::MoveForward);
