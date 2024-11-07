@@ -22,6 +22,7 @@ void AItem::BeginPlay()
 	Super::BeginPlay();
 	
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlap);
+	Sphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
 
 	//UE_LOG(LogTemp, Warning, TEXT("Begin Play Called!"));
 
@@ -72,6 +73,15 @@ void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 	}
 }
 
+void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	const FString OtherActorName = FString("Ending Overlap with: ") + OtherActor->GetName();
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 30.f, FColor::Red, OtherActorName);
+	}
+}
+
 void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -88,9 +98,9 @@ void AItem::Tick(float DeltaTime)
 
 	if (GEngine)
 	{
-		FString Name = GetName();
-		FString Message = FString::Printf(TEXT("Item Name : %s"), *Name);
-		GEngine->AddOnScreenDebugMessage(1, 60.f, FColor::Cyan, Message);
+		//FString Name = GetName();
+		//FString Message = FString::Printf(TEXT("Item Name : %s"), *Name);
+		//GEngine->AddOnScreenDebugMessage(1, 60.f, FColor::Cyan, Message);
 
 		//UE_LOG(LogTemp, Warning, TEXT("Item Name : %s"), *Name);
 
