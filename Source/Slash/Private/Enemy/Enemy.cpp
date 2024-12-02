@@ -55,7 +55,7 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 
 	// Lower Impact Point to the Enemy's Actor Location Z
 	const FVector ImpactLowered(ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z);
-	const FVector ToHit = (ImpactPoint - GetActorForwardVector()).GetSafeNormal();
+	const FVector ToHit = (ImpactLowered - GetActorLocation()).GetSafeNormal();
 
 	// Forward * ToHit = |Forward||ToHit| * cos(theta)
 	// |Forward| = 1, |ToHit| = 1, so Forward * ToHit = cos(theta) 
@@ -66,6 +66,14 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 
 	// Convert from radians to degrees
 	Theta = FMath::RadiansToDegrees(Theta);
+
+	// if CrossProduct points down, Thetha should be negative
+	const FVector CrossProduct = FVector::CrossProduct(Forward, ToHit);
+	if (CrossProduct.Z < 0)
+	{
+		Theta *= 1.f;
+	}
+	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + CrossProduct * 100.f, 5.f, FColor::Blue, 5.f);
 
 	if (GEngine)
 	{
