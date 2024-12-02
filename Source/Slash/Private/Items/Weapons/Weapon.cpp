@@ -7,6 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Interfaces/HitInterface.h"
 
 AWeapon::AWeapon()
 {
@@ -20,7 +21,6 @@ AWeapon::AWeapon()
 	BoxTraceStart->SetupAttachment(GetRootComponent());
 	BoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));
 	BoxTraceEnd->SetupAttachment(GetRootComponent());
-
 }
 
 void AWeapon::BeginPlay()
@@ -92,4 +92,13 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		EDrawDebugTrace::ForDuration,
 		BoxHit,
 		true);
+
+	if (BoxHit.GetActor())
+	{
+		IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor());
+		if (HitInterface)
+		{
+			HitInterface->GetHit(BoxHit.ImpactPoint);
+		}
+	}
 }
