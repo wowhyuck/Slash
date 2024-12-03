@@ -20,6 +20,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void GetHit(const FVector& ImpactPoint) override;
+	void DirectionalHitReact(const FVector& ImpactPoint);
 protected: 
 	virtual void BeginPlay() override;
 
@@ -34,6 +35,12 @@ private:
 	*/
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* HitReactMontage;
+
+	UPROPERTY(EditAnywhere, Category = Sounds)
+	USoundBase* HitSound;
+
+	UPROPERTY(EditAnywhere, Category = VisualEffects)
+	UParticleSystem* HitParticles;
 
 public:	
 
