@@ -82,7 +82,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	double CombatRadius = 500.f;
 
-
 	/*
 	* Navigation
 	*/
@@ -107,6 +106,8 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "AI Navigation")
 	float WaitMax = 10.f;
+
+	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 
 public:	
 
