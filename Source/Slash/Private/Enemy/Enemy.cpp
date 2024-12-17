@@ -158,7 +158,6 @@ void AEnemy::PawnSeen(APawn* SeenPawn)
 		{
 			EnemyState = EEnemyState::EES_Chasing;
 			MoveToTarget(CombatTarget);
-			UE_LOG(LogTemp, Warning, TEXT("Pawn Seen, chase Player"));
 		}
 	}
 }
@@ -215,7 +214,6 @@ void AEnemy::CheckCombatTarget()
 		EnemyState = EEnemyState::EES_Patrolling;
 		GetCharacterMovement()->MaxWalkSpeed = 125.f;
 		MoveToTarget(PatrolTarget);
-		UE_LOG(LogTemp, Warning, TEXT("Lose Interest"));
 	}
 	else if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Chasing)
 	{
@@ -223,13 +221,11 @@ void AEnemy::CheckCombatTarget()
 		EnemyState = EEnemyState::EES_Chasing;
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		MoveToTarget(CombatTarget);
-		UE_LOG(LogTemp, Warning, TEXT("Chase Player"));
 	}
 	else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Attacking)
 	{
 		// Inside attack range, attack character
 		EnemyState = EEnemyState::EES_Attacking;
-		UE_LOG(LogTemp, Warning, TEXT("Attack"));
 		// TODO: Attack Montage
 	}
 }
@@ -333,6 +329,9 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	}
 
 	CombatTarget = EventInstigator->GetPawn();
+	EnemyState = EEnemyState::EES_Chasing;
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	MoveToTarget(CombatTarget);
 
 	return DamageAmount;
 }
