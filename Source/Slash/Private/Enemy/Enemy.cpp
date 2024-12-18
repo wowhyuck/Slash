@@ -11,6 +11,7 @@
 #include "HUD/HealthBarComponent.h"
 #include "AIController.h"
 #include "Components/AttributeComponent.h"
+#include "Items/Weapons/Weapon.h"
 #include "Slash/DebugMacros.h"
 
 AEnemy::AEnemy()
@@ -52,6 +53,14 @@ void AEnemy::BeginPlay()
 	if (PawnSensing)
 	{
 		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
+	}
+
+	UWorld* World = GetWorld();
+	if (World && WeaponClass)
+	{
+		AWeapon* DefaultWeapon = World->SpawnActor<AWeapon>(WeaponClass);
+		DefaultWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+		EquippedWeapon = DefaultWeapon;
 	}
 }
 
@@ -272,5 +281,13 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	MoveToTarget(CombatTarget);
 
 	return DamageAmount;
+}
+
+void AEnemy::Destroyed()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->Destroy();
+	}
 }
 
