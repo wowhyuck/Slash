@@ -114,6 +114,7 @@ AActor* AEnemy::ChoosePatrolTarget()
 
 void AEnemy::Attack()
 {
+	EnemyState = EEnemyState::EES_Engaged;
 	Super::Attack();
 	PlayAttackMontage();
 }
@@ -123,6 +124,7 @@ bool AEnemy::CanAttack()
 	const bool bCanAttack =
 		IsInsideAttackRadius() &&
 		!IsAttacking() &&
+		!IsEngaged() &&
 		!IsDead();
 	return bCanAttack;
 }
@@ -146,6 +148,13 @@ int32 AEnemy::PlayDeathMontage()
 		DeathPose = Pose;
 	}
 	return int32();
+}
+
+void AEnemy::AttackEnd()
+{
+	EnemyState = EEnemyState::EES_NoState;
+	CheckCombatTarget();
+
 }
 
 void AEnemy::PawnSeen(APawn* SeenPawn)
