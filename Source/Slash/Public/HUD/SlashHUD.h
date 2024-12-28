@@ -14,6 +14,7 @@ class SLASH_API ASlashHUD : public AHUD
 	GENERATED_BODY()
 
 protected:
+	virtual void PreInitializeComponents() override;
 	virtual void BeginPlay() override;
 	
 private:
@@ -22,4 +23,7 @@ private:
 
 	UPROPERTY()
 	USlashOverlay* SlashOverlay;
+
+public:
+	FORCEINLINE USlashOverlay* GetSlashOverlay() const { return SlashOverlay; }
 };

@@ -4,10 +4,8 @@
 #include "HUD/SlashHUD.h"
 #include "HUD/SlashOverlay.h"
 
-void ASlashHUD::BeginPlay()
+void ASlashHUD::PreInitializeComponents()
 {
-	Super::BeginPlay();
-
 	UWorld* World = GetWorld();
 	if (World)
 	{
@@ -18,4 +16,10 @@ void ASlashHUD::BeginPlay()
 			SlashOverlay->AddToViewport();
 		}
 	}
+}
+
+void ASlashHUD::BeginPlay()
+{
+	Super::BeginPlay();
+
 }
