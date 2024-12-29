@@ -8,6 +8,7 @@
 #include "Items/Weapons/Weapon.h"
 #include "Kismet/GameplayStatics.h"
 
+
 ABaseCharacter::ABaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -49,6 +50,7 @@ void ABaseCharacter::Attack()
 
 void ABaseCharacter::Die()
 {
+	PlayDeathMontage();
 }
 
 void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint)
@@ -138,6 +140,11 @@ bool ABaseCharacter::IsAlive()
 	return Attributes && Attributes->IsAlive();
 }
 
+void ABaseCharacter::DisableMeshCollision()
+{
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
 int32 ABaseCharacter::PlayAttackMontage()
 {
 	return PlayRandomMontageSection(AttackMontage, AttackMontageSections);
@@ -145,7 +152,14 @@ int32 ABaseCharacter::PlayAttackMontage()
 
 int32 ABaseCharacter::PlayDeathMontage()
 {
-	return PlayRandomMontageSection(DeathMontage, DeathMontageSections);
+	const int32 Selection = PlayRandomMontageSection(DeathMontage, DeathMontageSections);
+	TEnumAsByte<EDeathPose> Pose(Selection);
+	if (Pose < EDeathPose::EDP_MAX)
+	{
+		DeathPose = Pose;
+	}
+
+	return Selection;
 }
 
 void ABaseCharacter::PlayHitReactMontage(const FName& SectionName)
