@@ -5,7 +5,7 @@
 #include "DrawDebugHelpers.h"
 #include "Slash/DebugMacros.h"
 #include "Components/SphereComponent.h"
-#include "Characters/SlashCharacter.h"
+#include "Interfaces/PickupInterface.h"
 #include "NiagaraComponent.h"
 
 AItem::AItem()
@@ -20,8 +20,8 @@ AItem::AItem()
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	Sphere->SetupAttachment(GetRootComponent());
 
-	EmbersEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Embers"));
-	EmbersEffect->SetupAttachment(GetRootComponent());
+	ItemEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Embers"));
+	ItemEffect->SetupAttachment(GetRootComponent());
 }
 
 void AItem::BeginPlay()
@@ -44,10 +44,10 @@ float AItem::TransformedCosin()
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	ASlashCharacter* SlashCharacter = Cast<ASlashCharacter>(OtherActor);
-	if (SlashCharacter)
+	IPickupInterface* HitInterface = Cast<IPickupInterface>(OtherActor);
+	if (HitInterface)
 	{
-		SlashCharacter->SetOverlappingItem(this);
+		HitInterface->SetOverlappingItem(this);
 	}
 
 	//const FString OtherActorName = OtherActor->GetName();
@@ -60,10 +60,10 @@ void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 
 void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	ASlashCharacter* SlashCharacter = Cast<ASlashCharacter>(OtherActor);
-	if (SlashCharacter)
+	IPickupInterface* HitInterface = Cast<IPickupInterface>(OtherActor);
+	if (HitInterface)
 	{
-		SlashCharacter->SetOverlappingItem(nullptr);
+		HitInterface->SetOverlappingItem(nullptr);
 	}
 
 	//const FString OtherActorName = FString("Ending Overlap with: ") + OtherActor->GetName();
