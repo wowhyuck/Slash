@@ -18,4 +18,9 @@ protected:
 	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 private:
+	UPROPERTY(EditAnywhere, Category = "Soul Properties")
+	float Recovery;
+
+public:
+	FORCEINLINE float GetRecovery() const { return Recovery; }
 };
