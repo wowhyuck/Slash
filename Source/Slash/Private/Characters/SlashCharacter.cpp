@@ -58,6 +58,14 @@ void ASlashCharacter::Tick(float DeltaTime)
 	}
 }
 
+float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	HandleDamage(DamageAmount);
+	SetHUDHealth();
+
+	return DamageAmount;
+}
+
 void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -79,14 +87,6 @@ void ASlashCharacter::Jump()
 	{
 		Super::Jump();
 	}
-}
-
-float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	HandleDamage(DamageAmount);
-	SetHUDHealth();
-
-	return DamageAmount;
 }
 
 void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
@@ -130,6 +130,16 @@ void ASlashCharacter::BeginPlay()
 	Tags.Add(FName("EngageableTarget"));
 
 	InitializeSlashOverlay();
+}
+
+void ASlashCharacter::Attack()
+{
+	Super::Attack();
+	if (CanAttack())
+	{
+		PlayAttackMontage();
+		ActionState = EActionState::EAS_Attacking;
+	}
 }
 
 void ASlashCharacter::MoveForward(float Value)
@@ -190,16 +200,6 @@ void ASlashCharacter::EKeyPressed()
 	}
 }
 
-void ASlashCharacter::Attack()
-{
-	Super::Attack();
-	if (CanAttack())
-	{
-		PlayAttackMontage();
-		ActionState = EActionState::EAS_Attacking;
-	}
-}
-
 void ASlashCharacter::Dodge()
 {
 	if (IsOccupied() || !HasEnoughStamina()) return;
@@ -211,14 +211,6 @@ void ASlashCharacter::Dodge()
 		Attributes->UseStamina(Attributes->GetDodgeCost());
 		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
 	}
-}
-
-void ASlashCharacter::EquipWeapon(AWeapon* Weapon)
-{
-	Weapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
-	CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
-	OverlappingItem = nullptr;
-	EquippedWeapon = Weapon;
 }
 
 void ASlashCharacter::AttackEnd()
@@ -234,8 +226,16 @@ void ASlashCharacter::DodgeEnd()
 
 bool ASlashCharacter::CanAttack()
 {
-	return ActionState == EActionState::EAS_Unoccupied && 
+	return ActionState == EActionState::EAS_Unoccupied &&
 		CharacterState != ECharacterState::ECS_Unequipped;
+}
+
+void ASlashCharacter::EquipWeapon(AWeapon* Weapon)
+{
+	Weapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+	CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+	OverlappingItem = nullptr;
+	EquippedWeapon = Weapon;
 }
 
 bool ASlashCharacter::CanDisarm()

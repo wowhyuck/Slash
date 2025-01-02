@@ -110,15 +110,6 @@ void AEnemy::Die()
 	SpawnSoul();
 }
 
-void AEnemy::SpawnSoul()
-{
-	UWorld* World = GetWorld();
-	if (World && SoulClass)
-	{
-		ASoul* SpawnedSoul = World->SpawnActor<ASoul>(SoulClass, GetActorLocation(), GetActorRotation());
-	}
-}
-
 void AEnemy::Attack()
 {
 	Super::Attack();
@@ -151,6 +142,15 @@ void AEnemy::HandleDamage(float DamageAmount)
 	if (Attributes && HealthBarWidget)
 	{
 		HealthBarWidget->SetHealthPercent(Attributes->GetHealthPercent());
+	}
+}
+
+void AEnemy::SpawnSoul()
+{
+	UWorld* World = GetWorld();
+	if (World && SoulClass)
+	{
+		ASoul* SpawnedSoul = World->SpawnActor<ASoul>(SoulClass, GetActorLocation(), GetActorRotation());
 	}
 }
 

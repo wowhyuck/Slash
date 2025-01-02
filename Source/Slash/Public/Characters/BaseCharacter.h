@@ -19,13 +19,21 @@ class SLASH_API ABaseCharacter : public ACharacter, public IHitInterface
 
 public:
 	ABaseCharacter();
+
+	/* <AActor> */
 	virtual void Tick(float DeltaTime) override;
+	/* </AActor> */
 
 protected:
+	/* <AActor> */
 	virtual void BeginPlay() override;
+	/* </AActor> */
 
 	/* Combat */
+	/* <IHitInterface> */
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
+	/* </IHitInterface> */
+
 	virtual	void Attack();
 	virtual void Die();
 	void DirectionalHitReact(const FVector& ImpactPoint);
@@ -36,6 +44,7 @@ protected:
 	virtual bool CanAttack();
 	bool IsAlive();
 	void DisableMeshCollision();
+	/* /Combat */
 
 	/* Montage */
 	virtual int32 PlayAttackMontage();
@@ -43,6 +52,7 @@ protected:
 	virtual void PlayDodgeMontage();
 	void PlayHitReactMontage(const FName& SectionName);
 	void StopAttackMontage();
+	/* /Montage */
 
 	UFUNCTION(BlueprintCallable)
 	FVector GetTranslationWarpTarget();
@@ -75,14 +85,9 @@ protected:
 	TEnumAsByte<EDeathPose> DeathPose;
 
 private:
+	/* Montage */
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
-
-	UPROPERTY(EditAnywhere, Category = Combat)
-	USoundBase* HitSound;
-
-	UPROPERTY(EditAnywhere, Category = Combat)
-	UParticleSystem* HitParticles;
 
 	UPROPERTY(EditDefaultsOnly, Category = Combat)
 	UAnimMontage* AttackMontage;
@@ -101,6 +106,13 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	TArray<FName> DeathMontageSections;
+	/* /Montage */
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	USoundBase* HitSound;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UParticleSystem* HitParticles;
 
 public:
 	FORCEINLINE TEnumAsByte<EDeathPose> GetDeathPose() const { return DeathPose; }

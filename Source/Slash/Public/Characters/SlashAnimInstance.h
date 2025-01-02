@@ -16,8 +16,10 @@ class SLASH_API USlashAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 	
 public:
+	/* <UAnimInstance> */
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
+	/* </UAnimInstance> */
 
 	UPROPERTY(BlueprintReadOnly)
 	class ASlashCharacter* SlashCharacter;

@@ -24,7 +24,6 @@ public:
 	virtual void Destroyed() override;
 	/* </AActor> */
 
-
 	/* <IHitInterface> */
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 	/* </IHitInterface> */
@@ -36,12 +35,13 @@ protected:
 
 	/* <ABaseCharacter> */
 	virtual void Die() override;
-	void SpawnSoul();
 	virtual	void Attack() override;
 	virtual bool CanAttack() override;
 	virtual void AttackEnd() override;
 	virtual void HandleDamage(float DamageAmount) override;
 	/* </ABaseCharacter> */
+
+	void SpawnSoul();
 
 	UPROPERTY(BlueprintReadOnly)
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;

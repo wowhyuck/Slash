@@ -24,32 +24,56 @@ class SLASH_API ASlashCharacter : public ABaseCharacter, public IPickupInterface
 
 public:
 	ASlashCharacter();
+
+	/* <AActor> */
 	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void Jump() override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	/* </AActor> */
+
+	/* <APawn> */
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	/* </APawn> */
+
+	/* <ACharacter> */
+	virtual void Jump() override;
+	/* </ACharacter> */
+
+	/* <IHitInterface> */
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
+	/* </IHitInterface> */
+
+	/* <IPickupInterface> */
 	virtual void SetOverlappingItem(AItem* Item) override;
 	virtual void AddSouls(ASoul* Soul) override;
 	virtual void AddGold(ATreasure* Treasure) override;
+	/* </IPickupInterface> */
 
 protected:
+	/* <AActor> */
 	virtual void BeginPlay() override;
+	/* </AActor> */
 
 	/* Callbacks for input */
+	/* <ABaseCharacter> */
+	virtual void Attack() override;
+	/* </ABaseCharacter> */
+
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void Turn(float Value);
 	void LookUp(float Value);
 	void EKeyPressed();
-	virtual void Attack() override;
 	void Dodge();
+	/* /Callbacks for input */
 
 	/* Combat */
-	void EquipWeapon(AWeapon* Weapon);
+	/* <ABaseCharacter> */
 	virtual void AttackEnd() override;
 	virtual void DodgeEnd() override;
 	virtual bool CanAttack() override;
+	/* </ABaseCharacter> */
+
+	void EquipWeapon(AWeapon* Weapon);
 	bool CanDisarm();
 	bool CanArm();
 	void Disarm();
@@ -70,6 +94,8 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void HitReactEnd();
+	/* /Combat */
+
 private:
 	bool IsUnoccupied();
 	void InitializeSlashOverlay();
@@ -87,6 +113,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Hair")
 	UGroomComponent* Eyebrows;
+	/* /Character components */
 
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem;
