@@ -69,6 +69,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 
+	UFUNCTION(BlueprintCallable)
+	void SetMeshCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
+
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	AWeapon* EquippedWeapon;
 

@@ -230,6 +230,11 @@ void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collision
 	}
 }
 
+void ABaseCharacter::SetMeshCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
+{
+	GetMesh()->SetCollisionEnabled(CollisionEnabled);
+}
+
 void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
