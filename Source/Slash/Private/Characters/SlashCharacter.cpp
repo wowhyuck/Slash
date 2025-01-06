@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Characters/SlashCharacter.h"
@@ -93,6 +93,12 @@ void ASlashCharacter::Jump()
 
 void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
+	bool bBlockAttack = IsFront(ImpactPoint) && ActionState == EActionState::EAS_Blocking;
+
+	// 막기 성공
+	if (bBlockAttack) return;
+
+	// 막기 실패
 	Super::GetHit_Implementation(ImpactPoint, Hitter);
 
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -146,8 +152,8 @@ void ASlashCharacter::Attack()
 
 void ASlashCharacter::Block()
 {
-	Super::Block();
 	PlayBlockMontage();
+	ActionState = EActionState::EAS_Blocking;
 }
 
 void ASlashCharacter::MoveForward(float Value)
@@ -224,6 +230,7 @@ void ASlashCharacter::Dodge()
 void ASlashCharacter::BlockEnd()
 {
 	StopBlockMontage();
+	ActionState = EActionState::EAS_Unoccupied;
 }
 
 void ASlashCharacter::AttackEnd()

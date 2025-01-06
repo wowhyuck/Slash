@@ -45,6 +45,8 @@ protected:
 	virtual bool CanAttack();
 	bool IsAlive();
 	void DisableMeshCollision();
+	double GetThetaImpactPoint(const FVector& ImpactPoint);
+	bool IsFront(const FVector& ImpactPoint);
 	/* /Combat */
 
 	/* Montage */
