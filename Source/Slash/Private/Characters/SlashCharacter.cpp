@@ -79,6 +79,8 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction(FName("Equip"), IE_Pressed, this, &ASlashCharacter::EKeyPressed);
 	PlayerInputComponent->BindAction(FName("Attack"), IE_Pressed, this, &ASlashCharacter::Attack);
 	PlayerInputComponent->BindAction(FName("Dodge"), IE_Pressed, this, &ASlashCharacter::Dodge);
+	PlayerInputComponent->BindAction(FName("Block"), IE_Pressed, this, &ASlashCharacter::Block);
+	PlayerInputComponent->BindAction(FName("Block"), IE_Released, this, &ASlashCharacter::BlockEnd);
 }
 
 void ASlashCharacter::Jump()
@@ -140,6 +142,12 @@ void ASlashCharacter::Attack()
 		PlayAttackMontage();
 		ActionState = EActionState::EAS_Attacking;
 	}
+}
+
+void ASlashCharacter::Block()
+{
+	Super::Block();
+	PlayBlockMontage();
 }
 
 void ASlashCharacter::MoveForward(float Value)
@@ -211,6 +219,11 @@ void ASlashCharacter::Dodge()
 		Attributes->UseStamina(Attributes->GetDodgeCost());
 		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
 	}
+}
+
+void ASlashCharacter::BlockEnd()
+{
+	StopBlockMontage();
 }
 
 void ASlashCharacter::AttackEnd()

@@ -56,6 +56,7 @@ protected:
 	/* Callbacks for input */
 	/* <ABaseCharacter> */
 	virtual void Attack() override;
+	virtual void Block() override;
 	/* </ABaseCharacter> */
 
 	void MoveForward(float Value);
@@ -64,6 +65,7 @@ protected:
 	void LookUp(float Value);
 	void EKeyPressed();
 	void Dodge();
+	void BlockEnd();
 	/* /Callbacks for input */
 
 	/* Combat */

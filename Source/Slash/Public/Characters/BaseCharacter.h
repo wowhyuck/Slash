@@ -35,6 +35,7 @@ protected:
 	/* </IHitInterface> */
 
 	virtual	void Attack();
+	virtual void Block();
 	virtual void Die();
 	void DirectionalHitReact(const FVector& ImpactPoint);
 	virtual void HandleDamage(float DamageAmount);
@@ -49,9 +50,11 @@ protected:
 	/* Montage */
 	virtual int32 PlayAttackMontage();
 	virtual int32 PlayDeathMontage();
+	virtual void PlayBlockMontage();
 	virtual void PlayDodgeMontage();
 	void PlayHitReactMontage(const FName& SectionName);
 	void StopAttackMontage();
+	void StopBlockMontage();
 	/* /Montage */
 
 	UFUNCTION(BlueprintCallable)
@@ -97,6 +100,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = Combat)
 	UAnimMontage* HitReactMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = Combat)
+	UAnimMontage* BlockMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = Combat)
 	UAnimMontage* DeathMontage;

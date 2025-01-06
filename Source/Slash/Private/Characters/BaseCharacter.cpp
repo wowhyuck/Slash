@@ -52,6 +52,11 @@ void ABaseCharacter::Attack()
 	}
 }
 
+void ABaseCharacter::Block()
+{
+
+}
+
 void ABaseCharacter::Die()
 {
 	Tags.Add(FName("Dead"));
@@ -167,6 +172,11 @@ int32 ABaseCharacter::PlayDeathMontage()
 	return Selection;
 }
 
+void ABaseCharacter::PlayBlockMontage()
+{
+	PlayMontageSection(BlockMontage, FName("Default"));
+}
+
 void ABaseCharacter::PlayDodgeMontage()
 {
 	PlayMontageSection(DodgeMontage, FName("Default"));
@@ -188,6 +198,15 @@ void ABaseCharacter::StopAttackMontage()
 	if (AnimInstance)
 	{
 		AnimInstance->Montage_Stop(0.25f, AttackMontage);
+	}
+}
+
+void ABaseCharacter::StopBlockMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance)
+	{
+		AnimInstance->Montage_Stop(0.25f, BlockMontage);
 	}
 }
 
