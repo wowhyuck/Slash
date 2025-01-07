@@ -57,7 +57,7 @@ void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UAttributeComponent::RegenStamina(float DeltaTime)
+void UAttributeComponent::RegenStamina(float DeltaTime, float StaminaRegenRate)
 {
 	Stamina = FMath::Clamp(Stamina + StaminaRegenRate * DeltaTime, 0.f, MaxStamina);
 }

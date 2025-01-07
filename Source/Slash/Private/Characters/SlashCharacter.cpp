@@ -47,13 +47,20 @@ ASlashCharacter::ASlashCharacter()
 	Eyebrows = CreateDefaultSubobject<UGroomComponent>(TEXT("Eyebrows"));
 	Eyebrows->SetupAttachment(GetMesh());
 	Eyebrows->AttachmentName = FString("head");
+
+	if (Attributes)
+	{
+		DodgeCost = Attributes->GetDodgeCost();
+		StartBlockCost = Attributes->GetStartBlockCost();
+		StaminaRegenRate = Attributes->GetDefaultStaminaRegenRate();
+	}
 }
 
 void ASlashCharacter::Tick(float DeltaTime)
 {
 	if (Attributes && SlashOverlay)
 	{
-		Attributes->RegenStamina(DeltaTime);
+		Attributes->RegenStamina(DeltaTime, StaminaRegenRate);
 		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
 	}
 }
@@ -152,8 +159,16 @@ void ASlashCharacter::Attack()
 
 void ASlashCharacter::Block()
 {
+	if (IsOccupied() || !HasEnoughStamina(StartBlockCost)) return;
+
+	ClearStaminaRegenTimer();
 	PlayBlockMontage();
 	ActionState = EActionState::EAS_Blocking;
+	UseStaminaCost(StartBlockCost);
+	if (Attributes)
+	{
+		StaminaRegenRate = Attributes->GetBlockingStaminaRegenRate();
+	}
 }
 
 void ASlashCharacter::MoveForward(float Value)
@@ -216,21 +231,19 @@ void ASlashCharacter::EKeyPressed()
 
 void ASlashCharacter::Dodge()
 {
-	if (IsOccupied() || !HasEnoughStamina()) return;
+	if (IsOccupied() || !HasEnoughStamina(DodgeCost)) return;
 
 	PlayDodgeMontage();
 	ActionState = EActionState::EAS_Dodge;
-	if (Attributes && SlashOverlay)
-	{
-		Attributes->UseStamina(Attributes->GetDodgeCost());
-		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
-	}
+
+	UseStaminaCost(DodgeCost);
 }
 
 void ASlashCharacter::BlockEnd()
 {
 	StopBlockMontage();
 	ActionState = EActionState::EAS_Unoccupied;
+	GetWorldTimerManager().SetTimer(StaminaRegenTimer, this, &ASlashCharacter::ChangeStaminaRegenRateBlockingToDefault, StartStaminaRegenTime);
 }
 
 void ASlashCharacter::AttackEnd()
@@ -303,9 +316,9 @@ void ASlashCharacter::Die()
 	DisableMeshCollision();
 }
 
-bool ASlashCharacter::HasEnoughStamina()
+bool ASlashCharacter::HasEnoughStamina(const float& Cost)
 {
-	return Attributes && (Attributes->GetStamina() > Attributes->GetDodgeCost());
+	return Attributes && (Attributes->GetStamina() > Cost);
 }
 
 bool ASlashCharacter::IsOccupied()
@@ -372,4 +385,25 @@ void ASlashCharacter::SetHUDHealth()
 	}
 }
 
+void ASlashCharacter::UseStaminaCost(const float& StaminaCost)
+{
+	if (SlashOverlay)
+	{
+		Attributes->UseStamina(StaminaCost);
+		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
+	}
+}
 
+void ASlashCharacter::ChangeStaminaRegenRateBlockingToDefault()
+{
+	if (Attributes)
+	{
+		StaminaRegenRate = Attributes->GetDefaultStaminaRegenRate();
+	}
+}
+
+
+void ASlashCharacter::ClearStaminaRegenTimer()
+{
+	GetWorldTimerManager().ClearTimer(StaminaRegenTimer);
+}

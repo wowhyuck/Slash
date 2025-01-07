@@ -82,7 +82,7 @@ protected:
 	void Arm();
 	void PlayEquipMontage(const FName& SectionName);
 	virtual void Die() override;
-	bool HasEnoughStamina();
+	bool HasEnoughStamina(const float& Cost);
 	bool IsOccupied();
 
 	UFUNCTION(BlueprintCallable)
@@ -102,6 +102,9 @@ private:
 	bool IsUnoccupied();
 	void InitializeSlashOverlay();
 	void SetHUDHealth();
+	void UseStaminaCost(const float& StaminaCost);
+	void ChangeStaminaRegenRateBlockingToDefault();
+	void ClearStaminaRegenTimer();
 
 	/* Character components */
 	UPROPERTY(VisibleAnywhere)
@@ -130,6 +133,12 @@ private:
 
 	UPROPERTY()
 	USlashOverlay* SlashOverlay;
+
+	float DodgeCost;
+	float StartBlockCost;
+	float StaminaRegenRate;
+	float StartStaminaRegenTime = 3.f;
+	FTimerHandle StaminaRegenTimer;
 
 public:
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }

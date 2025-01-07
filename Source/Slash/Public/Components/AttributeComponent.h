@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -15,10 +15,11 @@ class SLASH_API UAttributeComponent : public UActorComponent
 public:	
 	UAttributeComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	void RegenStamina(float DeltaTime);
+	void RegenStamina(float DeltaTime, float StaminaRegenRate);
 
 protected:
 	virtual void BeginPlay() override;
+
 
 private:
 	// Current Health
@@ -42,7 +43,13 @@ private:
 	float DodgeCost = 10.f;
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
-	float StaminaRegenRate = 5.f;
+	float StartBlockCost = 5.f;									// Block 키를 눌렀을 때 비용
+
+	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
+	float DefaultStaminaRegenRate = 5.f;
+
+	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
+	float BlockingStaminaRegenRate = 1.f;
 
 public:
 	void ReceiveDamage(float Damage);
@@ -54,5 +61,9 @@ public:
 	void AddGold(int32 AmountOfGold);
 	FORCEINLINE int32 GetGold() const { return Gold; }
 	FORCEINLINE float GetDodgeCost() const { return DodgeCost; }
+	FORCEINLINE float GetStartBlockCost() const { return StartBlockCost; }
 	FORCEINLINE float GetStamina() const { return Stamina; }
+	FORCEINLINE float GetDefaultStaminaRegenRate() const { return DefaultStaminaRegenRate; }
+	FORCEINLINE float GetBlockingStaminaRegenRate() const { return BlockingStaminaRegenRate; }
+	
 };
