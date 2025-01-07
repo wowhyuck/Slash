@@ -100,6 +100,7 @@ protected:
 
 private:
 	bool IsUnoccupied();
+	bool IsFalling();
 	void InitializeSlashOverlay();
 	void SetHUDHealth();
 	void UseStaminaCost(const float& StaminaCost);

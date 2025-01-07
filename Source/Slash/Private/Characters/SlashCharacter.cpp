@@ -149,6 +149,8 @@ void ASlashCharacter::BeginPlay()
 
 void ASlashCharacter::Attack()
 {
+	if (IsOccupied() || IsFalling()) return;
+
 	Super::Attack();
 	if (CanAttack())
 	{
@@ -159,7 +161,7 @@ void ASlashCharacter::Attack()
 
 void ASlashCharacter::Block()
 {
-	if (IsOccupied() || !HasEnoughStamina(StartBlockCost)) return;
+	if (IsOccupied() || IsFalling() || !HasEnoughStamina(StartBlockCost)) return;
 
 	ClearStaminaRegenTimer();
 	PlayBlockMontage();
@@ -231,7 +233,7 @@ void ASlashCharacter::EKeyPressed()
 
 void ASlashCharacter::Dodge()
 {
-	if (IsOccupied() || !HasEnoughStamina(DodgeCost)) return;
+	if (IsOccupied() || IsFalling() || !HasEnoughStamina(DodgeCost)) return;
 
 	PlayDodgeMontage();
 	ActionState = EActionState::EAS_Dodge;
@@ -356,6 +358,12 @@ bool ASlashCharacter::IsUnoccupied()
 {
 	return ActionState == EActionState::EAS_Unoccupied;
 }
+
+bool ASlashCharacter::IsFalling()
+{
+	return GetCharacterMovement()->IsFalling();
+}
+
 
 void ASlashCharacter::InitializeSlashOverlay()
 {
