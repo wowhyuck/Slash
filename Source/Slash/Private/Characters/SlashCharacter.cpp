@@ -118,7 +118,14 @@ void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 	// 막기 성공
 	if (bBlockAttack)
 	{
-		PlayBlockReactMontage();
+		if (HasEnoughStamina(BlockAttackCost))
+		{
+			PlayBlockReactMontage();
+		}
+		else
+		{
+			PlayHitReactMontage("FromFront");
+		}
 		return;
 	}
 
