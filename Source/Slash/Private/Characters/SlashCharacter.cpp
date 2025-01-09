@@ -4,6 +4,7 @@
 #include "Characters/SlashCharacter.h"
 #include "Animation/AnimMontage.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/AttributeComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -67,7 +68,18 @@ void ASlashCharacter::Tick(float DeltaTime)
 
 float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	HandleDamage(DamageAmount);
+	bBlockAttack = IsFront(DamageCauser->GetActorLocation()) && ActionState == EActionState::EAS_Blocking;
+	
+	// 공격 막기 성공했을 때 -> Weapon Location = ImpactPoint 해서 bBlockAttack = true로 만들기
+	if (bBlockAttack)
+	{
+		UseStaminaCost(BlockAttackCost);
+		HandleDamage(DamageBlocked);
+	}
+	else
+	{
+		HandleDamage(DamageAmount);
+	}
 	SetHUDHealth();
 
 	return DamageAmount;
@@ -100,10 +112,12 @@ void ASlashCharacter::Jump()
 
 void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
-	bool bBlockAttack = IsFront(ImpactPoint) && ActionState == EActionState::EAS_Blocking;
-
 	// 막기 성공
-	if (bBlockAttack) return;
+	if (bBlockAttack)
+	{
+		PlayBlockReactMontage();
+		return;
+	}
 
 	// 막기 실패
 	Super::GetHit_Implementation(ImpactPoint, Hitter);
@@ -161,8 +175,9 @@ void ASlashCharacter::Attack()
 
 void ASlashCharacter::Block()
 {
-	if (IsOccupied() || IsFalling() || !HasEnoughStamina(StartBlockCost)) return;
+	if (IsOccupied() || IsFalling() || !HasEnoughStamina(StartBlockCost) || CharacterState != ECharacterState::ECS_EquippedOneHandedWeapon) return;
 
+	GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	ClearStaminaRegenTimer();
 	PlayBlockMontage();
 	ActionState = EActionState::EAS_Blocking;
@@ -243,8 +258,10 @@ void ASlashCharacter::Dodge()
 
 void ASlashCharacter::BlockEnd()
 {
+	bBlockAttack = false;
+	GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
 	StopBlockMontage();
-	ActionState = EActionState::EAS_Unoccupied;
+	ActionState = Attributes->GetHealth() > 0.f ? EActionState::EAS_Unoccupied : EActionState::EAS_Dead;
 	GetWorldTimerManager().SetTimer(StaminaRegenTimer, this, &ASlashCharacter::ChangeStaminaRegenRateBlockingToDefault, StartStaminaRegenTime);
 }
 

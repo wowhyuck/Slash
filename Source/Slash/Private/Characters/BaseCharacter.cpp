@@ -167,7 +167,7 @@ bool ABaseCharacter::IsFront(const FVector& ImpactPoint)
 	double Theta = GetThetaImpactPoint(ImpactPoint);
 
 	// ImpactPoint 위치가 캐릭터 앞 -> true
-	if (Theta < 90.f && Theta >= -90.f)
+	if (Theta < 105.f && Theta >= -105.f)
 	{
 		return true;
 	}
@@ -196,6 +196,11 @@ int32 ABaseCharacter::PlayDeathMontage()
 void ABaseCharacter::PlayBlockMontage()
 {
 	PlayMontageSection(BlockMontage, FName("Default"));
+}
+
+void ABaseCharacter::PlayBlockReactMontage()
+{
+	PlayMontageSection(BlockMontage, FName("BlockReact"));
 }
 
 void ABaseCharacter::PlayDodgeMontage()

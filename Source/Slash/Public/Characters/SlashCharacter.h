@@ -140,6 +140,9 @@ private:
 	float StaminaRegenRate;
 	float StartStaminaRegenTime = 3.f;
 	FTimerHandle StaminaRegenTimer;
+	bool bBlockAttack = false;
+	float BlockAttackCost = 10.f;
+	float DamageBlocked = 0.f;
 
 public:
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }

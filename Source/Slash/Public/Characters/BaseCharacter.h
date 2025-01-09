@@ -53,6 +53,7 @@ protected:
 	virtual int32 PlayAttackMontage();
 	virtual int32 PlayDeathMontage();
 	virtual void PlayBlockMontage();
+	virtual void PlayBlockReactMontage();
 	virtual void PlayDodgeMontage();
 	void PlayHitReactMontage(const FName& SectionName);
 	void StopAttackMontage();
