@@ -9,6 +9,7 @@
 #include "Components/AttributeComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "GroomComponent.h"
 #include "Items/Item.h"
 #include "Items/Soul.h"
@@ -68,11 +69,13 @@ void ASlashCharacter::Tick(float DeltaTime)
 
 float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	bBlockAttack = IsFront(DamageCauser->GetActorLocation()) && ActionState == EActionState::EAS_Blocking;
+	FVector EnemyWeaponLocation = DamageCauser->GetActorLocation();
+	bBlockAttack = IsFront(EnemyWeaponLocation) && ActionState == EActionState::EAS_Blocking;
 	
 	// 공격 막기 성공했을 때 -> Weapon Location = ImpactPoint 해서 bBlockAttack = true로 만들기
 	if (bBlockAttack)
 	{
+		PlayBlockAttackSound(EnemyWeaponLocation);
 		UseStaminaCost(BlockAttackCost);
 		HandleDamage(DamageBlocked);
 	}
@@ -343,6 +346,17 @@ bool ASlashCharacter::HasEnoughStamina(const float& Cost)
 bool ASlashCharacter::IsOccupied()
 {
 	return ActionState != EActionState::EAS_Unoccupied;
+}
+
+void ASlashCharacter::PlayBlockAttackSound(const FVector& ImpactPoint)
+{
+	if (BlockAttackSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			BlockAttackSound,
+			ImpactPoint);
+	}
 }
 
 void ASlashCharacter::AttachWeaponToBack()

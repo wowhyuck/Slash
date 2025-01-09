@@ -16,6 +16,7 @@ class ASoul;
 class ATreasure;
 class UAnimMontage;
 class USlashOverlay;
+class USoundBase;
 
 UCLASS()
 class SLASH_API ASlashCharacter : public ABaseCharacter, public IPickupInterface
@@ -84,6 +85,8 @@ protected:
 	virtual void Die() override;
 	bool HasEnoughStamina(const float& Cost);
 	bool IsOccupied();
+	void PlayBlockAttackSound(const FVector& ImpactPoint);
+
 
 	UFUNCTION(BlueprintCallable)
 	void AttachWeaponToBack();
@@ -134,6 +137,9 @@ private:
 
 	UPROPERTY()
 	USlashOverlay* SlashOverlay;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	USoundBase* BlockAttackSound;
 
 	float DodgeCost;
 	float StartBlockCost;
