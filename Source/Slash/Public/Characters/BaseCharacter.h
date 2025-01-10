@@ -58,6 +58,8 @@ protected:
 	void PlayHitReactMontage(const FName& SectionName);
 	void StopAttackMontage();
 	void StopBlockMontage();
+	void PlayBlockingCounterMontage();
+	void PlayParryingCounterMontage();
 	/* /Montage */
 
 	UFUNCTION(BlueprintCallable)
@@ -93,13 +95,23 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	TEnumAsByte<EDeathPose> DeathPose;
 
-private:
-	/* Montage */
+
+
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
-	int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
 
 	UPROPERTY(EditDefaultsOnly, Category = Combat)
 	UAnimMontage* AttackMontage;
+
+
+private:
+	/* Montage */
+
+
+
+	int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
+
+
+
 
 	UPROPERTY(EditDefaultsOnly, Category = Combat)
 	UAnimMontage* HitReactMontage;
@@ -112,6 +124,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = Combat)
 	UAnimMontage* DodgeMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = Combat)
+	UAnimMontage* CounterMontage;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	TArray<FName> AttackMontageSections;

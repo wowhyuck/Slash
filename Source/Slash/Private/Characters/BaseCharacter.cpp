@@ -236,6 +236,16 @@ void ABaseCharacter::StopBlockMontage()
 	}
 }
 
+void ABaseCharacter::PlayBlockingCounterMontage()
+{
+	PlayMontageSection(CounterMontage, FName("Counter1"));
+}
+
+void ABaseCharacter::PlayParryingCounterMontage()
+{
+	PlayMontageSection(CounterMontage, FName("Counter2"));
+}
+
 FVector ABaseCharacter::GetTranslationWarpTarget()
 {
 	if (CombatTarget == nullptr) return FVector();

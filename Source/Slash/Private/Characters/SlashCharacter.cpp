@@ -75,6 +75,10 @@ float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	// 공격 막기 성공했을 때 -> Weapon Location = ImpactPoint 해서 bBlockAttack = true로 만들기
 	if (bBlockAttack)
 	{
+		bCanCounter = true;
+		GetWorldTimerManager().SetTimer(CanCounterTimer, this, &ASlashCharacter::ChangebCanCounter, CanCounterTime);
+
+		// 패링 성공했을 때
 		if (bCanParry)
 		{
 			PlayParrySound(EnemyWeaponLocation);
@@ -191,7 +195,8 @@ void ASlashCharacter::Attack()
 	Super::Attack();
 	if (CanAttack())
 	{
-		PlayAttackMontage();
+		UE_LOG(LogTemp, Warning, TEXT("Counter %s"), bCanCounter ? TEXT("True") : TEXT("False"));
+		bCanCounter ? Counter() : PlayAttackMontage();
 		ActionState = EActionState::EAS_Attacking;
 	}
 }
@@ -203,6 +208,7 @@ void ASlashCharacter::Block()
 	bCanParry = true;
 	GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	ClearStaminaRegenTimer();
+	//ClearCanCounterTimer();
 	PlayBlockMontage();
 	ActionState = EActionState::EAS_Blocking;
 	UseStaminaCost(StartBlockCost);
@@ -391,6 +397,11 @@ void ASlashCharacter::PlayParrySound(const FVector& ImpactPoint)
 	}
 }
 
+void ASlashCharacter::Counter()
+{
+	bCanParry ? PlayParryingCounterMontage() : PlayBlockingCounterMontage();
+}
+
 void ASlashCharacter::ParryEnd()
 {
 	bCanParry = false;
@@ -478,8 +489,17 @@ void ASlashCharacter::ChangeStaminaRegenRateBlockingToDefault()
 	}
 }
 
+void ASlashCharacter::ChangebCanCounter()
+{
+	bCanCounter = false;
+}
 
 void ASlashCharacter::ClearStaminaRegenTimer()
 {
 	GetWorldTimerManager().ClearTimer(StaminaRegenTimer);
+}
+
+void ASlashCharacter::ClearCanCounterTimer()
+{
+	GetWorldTimerManager().ClearTimer(CanCounterTimer);
 }

@@ -87,6 +87,7 @@ protected:
 	bool IsOccupied();
 	void PlayBlockAttackSound(const FVector& ImpactPoint);
 	void PlayParrySound(const FVector& ImpactPoint);
+	void Counter();
 
 	UFUNCTION(BlueprintCallable)
 	void AttachWeaponToBack();
@@ -111,7 +112,9 @@ private:
 	void SetHUDHealth();
 	void UseStaminaCost(const float& StaminaCost);
 	void ChangeStaminaRegenRateBlockingToDefault();
+	void ChangebCanCounter();
 	void ClearStaminaRegenTimer();
+	void ClearCanCounterTimer();
 
 	/* Character components */
 	UPROPERTY(VisibleAnywhere)
@@ -147,6 +150,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	USoundBase* ParrySound;
 
+
+
 	float DodgeCost;
 	float StartBlockCost;
 	float StaminaRegenRate;
@@ -156,6 +161,9 @@ private:
 	float BlockAttackCost = 10.f;
 	float DamageBlocked = 0.f;
 	bool bCanParry = false;
+	bool bCanCounter = false;
+	float CanCounterTime = 3.0;
+	FTimerHandle CanCounterTimer;
 
 public:
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
