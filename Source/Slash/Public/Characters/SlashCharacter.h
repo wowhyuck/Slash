@@ -86,7 +86,7 @@ protected:
 	bool HasEnoughStamina(const float& Cost);
 	bool IsOccupied();
 	void PlayBlockAttackSound(const FVector& ImpactPoint);
-
+	void PlayParrySound(const FVector& ImpactPoint);
 
 	UFUNCTION(BlueprintCallable)
 	void AttachWeaponToBack();
@@ -99,6 +99,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void HitReactEnd();
+
+	UFUNCTION(BlueprintCallable)
+	void ParryEnd();
 	/* /Combat */
 
 private:
@@ -141,6 +144,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	USoundBase* BlockAttackSound;
 
+	UPROPERTY(EditAnywhere, Category = Combat)
+	USoundBase* ParrySound;
+
 	float DodgeCost;
 	float StartBlockCost;
 	float StaminaRegenRate;
@@ -149,8 +155,10 @@ private:
 	bool bBlockAttack = false;
 	float BlockAttackCost = 10.f;
 	float DamageBlocked = 0.f;
+	bool bCanParry = false;
 
 public:
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
 	FORCEINLINE EActionState GetActionState() const { return ActionState; }
+	FORCEINLINE bool GetbCanParry() const { return bCanParry; }
 };

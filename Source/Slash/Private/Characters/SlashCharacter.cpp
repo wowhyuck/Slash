@@ -75,7 +75,20 @@ float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	// 공격 막기 성공했을 때 -> Weapon Location = ImpactPoint 해서 bBlockAttack = true로 만들기
 	if (bBlockAttack)
 	{
-		PlayBlockAttackSound(EnemyWeaponLocation);
+		if (bCanParry)
+		{
+			PlayParrySound(EnemyWeaponLocation);
+			ChangeStaminaRegenRateBlockingToDefault();
+			IHitInterface* HitInterface = Cast<IHitInterface>(DamageCauser->GetOwner());
+			if (HitInterface)
+			{
+				HitInterface->Execute_GetHit(DamageCauser->GetOwner(), EnemyWeaponLocation, this);
+			}
+		}
+		else
+		{
+			PlayBlockAttackSound(EnemyWeaponLocation);
+		}
 		UseStaminaCost(BlockAttackCost);
 		HandleDamage(DamageBlocked);
 	}
@@ -187,6 +200,7 @@ void ASlashCharacter::Block()
 {
 	if (IsOccupied() || IsFalling() || !HasEnoughStamina(StartBlockCost) || CharacterState != ECharacterState::ECS_EquippedOneHandedWeapon) return;
 
+	bCanParry = true;
 	GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	ClearStaminaRegenTimer();
 	PlayBlockMontage();
@@ -364,6 +378,22 @@ void ASlashCharacter::PlayBlockAttackSound(const FVector& ImpactPoint)
 			BlockAttackSound,
 			ImpactPoint);
 	}
+}
+
+void ASlashCharacter::PlayParrySound(const FVector& ImpactPoint)
+{
+	if (ParrySound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			ParrySound,
+			ImpactPoint);
+	}
+}
+
+void ASlashCharacter::ParryEnd()
+{
+	bCanParry = false;
 }
 
 void ASlashCharacter::AttachWeaponToBack()

@@ -3,6 +3,7 @@
 
 #include "Enemy/Enemy.h"
 #include "AIController.h"
+#include "Characters/SlashCharacter.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/AttributeComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -74,6 +75,7 @@ void AEnemy::Destroyed()
 void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
 	Super::GetHit_Implementation(ImpactPoint, Hitter);
+
 	if (!IsDead())
 	{
 		ShowHealthBar();
