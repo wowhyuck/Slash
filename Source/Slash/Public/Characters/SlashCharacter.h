@@ -58,6 +58,7 @@ protected:
 	/* <ABaseCharacter> */
 	virtual void Attack() override;
 	virtual void Block() override;
+	virtual int32 PlayAttackMontage() override;
 	/* </ABaseCharacter> */
 
 	void MoveForward(float Value);
@@ -115,6 +116,7 @@ private:
 	void ChangebCanCounter();
 	void ClearStaminaRegenTimer();
 	void ClearCanCounterTimer();
+	void ResetCurrentCombo();
 
 	/* Character components */
 	UPROPERTY(VisibleAnywhere)
@@ -150,8 +152,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	USoundBase* ParrySound;
 
-
-
 	float DodgeCost;
 	float StartBlockCost;
 	float StaminaRegenRate;
@@ -164,6 +164,11 @@ private:
 	bool bCanCounter = false;
 	float CanCounterTime = 3.0;
 	FTimerHandle CanCounterTimer;
+	bool CanNextCombo = false;
+	int32 CurrentCombo = 0;
+	int32 MaxCombo;
+	FTimerHandle ResetComboTimer;
+	float ResetComboTime = 1.f;
 
 public:
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }

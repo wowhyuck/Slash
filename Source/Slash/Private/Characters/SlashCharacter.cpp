@@ -186,18 +186,22 @@ void ASlashCharacter::BeginPlay()
 	Tags.Add(FName("EngageableTarget"));
 
 	InitializeSlashOverlay();
+	MaxCombo = AttackMontageSections.Num() - 1;
 }
 
 void ASlashCharacter::Attack()
 {
 	if (IsOccupied() || IsFalling()) return;
 
+	GetWorldTimerManager().ClearTimer(ResetComboTimer);
+
 	Super::Attack();
 	if (CanAttack())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Counter %s"), bCanCounter ? TEXT("True") : TEXT("False"));
 		bCanCounter ? Counter() : PlayAttackMontage();
 		ActionState = EActionState::EAS_Attacking;
+
+		CurrentCombo = (CurrentCombo == MaxCombo) ? 0 : FMath::Clamp(CurrentCombo + 1, 0, MaxCombo);
 	}
 }
 
@@ -216,6 +220,17 @@ void ASlashCharacter::Block()
 	{
 		StaminaRegenRate = Attributes->GetBlockingStaminaRegenRate();
 	}
+}
+
+int32 ASlashCharacter::PlayAttackMontage()
+{
+	PlayMontageSection(AttackMontage, AttackMontageSections[CurrentCombo]);
+
+	if (CanNextCombo)
+	{
+	}
+
+	return CurrentCombo;
 }
 
 void ASlashCharacter::MoveForward(float Value)
@@ -298,6 +313,7 @@ void ASlashCharacter::BlockEnd()
 void ASlashCharacter::AttackEnd()
 {
 	ActionState = EActionState::EAS_Unoccupied;
+	GetWorldTimerManager().SetTimer(ResetComboTimer, this, &ASlashCharacter::ResetCurrentCombo, ResetComboTime);
 }
 
 void ASlashCharacter::DodgeEnd()
@@ -502,4 +518,9 @@ void ASlashCharacter::ClearStaminaRegenTimer()
 void ASlashCharacter::ClearCanCounterTimer()
 {
 	GetWorldTimerManager().ClearTimer(CanCounterTimer);
+}
+
+void ASlashCharacter::ResetCurrentCombo()
+{
+	CurrentCombo = 0;
 }
