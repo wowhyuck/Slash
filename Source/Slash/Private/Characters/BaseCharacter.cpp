@@ -31,10 +31,12 @@ void ABaseCharacter::BeginPlay()
 
 void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
+	// 캐릭터가 살아있을 경우
 	if (IsAlive() && Hitter)
 	{
 		DirectionalHitReact(Hitter->GetActorLocation());
 	}
+	// 캐릭터가 죽었을 경우
 	else
 	{
 		Die();
@@ -46,6 +48,7 @@ void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* H
 
 void ABaseCharacter::Attack()
 {
+	// 주시하던 CombatTarget이 죽었을 경우
 	if (CombatTarget && CombatTarget->ActorHasTag(FName("Dead")))
 	{
 		CombatTarget = nullptr;
@@ -138,21 +141,23 @@ double ABaseCharacter::GetThetaImpactPoint(const FVector& ImpactPoint)
 {
 	const FVector Forward = GetActorForwardVector();
 
-	// Lower Impact Point to the Enemy's Actor Location Z
+	// ImpactPoint와 캐릭터 Location.Z 일치
+	// 캐릭터->ImpactPoint의 유닛벡터 구하기
 	const FVector ImpactLowered(ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z);
 	const FVector ToHit = (ImpactLowered - GetActorLocation()).GetSafeNormal();
 
 	// Forward * ToHit = |Forward||ToHit| * cos(theta)
-	// |Forward| = 1, |ToHit| = 1, so Forward * ToHit = cos(theta) 
+	// |Forward| = 1, |ToHit| = 1 -> Forward * ToHit = cos(theta) 
 	const double CosTheta = FVector::DotProduct(Forward, ToHit);
 
-	// Take the inverse cosine (arc-cosine) of cos(theta) to get theta
+	// Theta 구하기
+	// theta = acos(cos(theta)) 
 	double Theta = FMath::Acos(CosTheta);
 
-	// Convert from radians to degrees
+	// Radian을 degree로 변환
 	Theta = FMath::RadiansToDegrees(Theta);
 
-	// if CrossProduct points down, Thetha should be negative
+	// CrossProduct.Z가 -일 경우, ImpactPoint가 캐릭터 왼쪽 위치 (언리얼에서 외적은 왼손법칙)
 	const FVector CrossProduct = FVector::CrossProduct(Forward, ToHit);
 	if (CrossProduct.Z < 0)
 	{
@@ -183,6 +188,8 @@ int32 ABaseCharacter::PlayAttackMontage()
 
 int32 ABaseCharacter::PlayDeathMontage()
 {
+	// DeathMontage와 Dead Animation 포즈를 일치하기 위해,
+	// 실행된 DeathMontage의 Section 번호를 Selection에 대입 
 	const int32 Selection = PlayRandomMontageSection(DeathMontage, DeathMontageSections);
 	TEnumAsByte<EDeathPose> Pose(Selection);
 	if (Pose < EDeathPose::EDP_MAX)
@@ -246,6 +253,16 @@ void ABaseCharacter::PlayParryingCounterMontage()
 	PlayMontageSection(CounterMontage, FName("Counter2"));
 }
 
+void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && Montage)
+	{
+		AnimInstance->Montage_Play(Montage);
+		AnimInstance->Montage_JumpToSection(SectionName, Montage);
+	}
+}
+
 FVector ABaseCharacter::GetTranslationWarpTarget()
 {
 	if (CombatTarget == nullptr) return FVector();
@@ -253,6 +270,7 @@ FVector ABaseCharacter::GetTranslationWarpTarget()
 	const FVector CombatTargetLocation = CombatTarget->GetActorLocation();
 	const FVector Location = GetActorLocation();
 
+	// CombatTarget->캐릭터 방향의 거리
 	FVector TargetToMe = (Location - CombatTargetLocation).GetSafeNormal();
 	TargetToMe *= WarpTargetDistance;
 
@@ -263,6 +281,7 @@ FVector ABaseCharacter::GetRotationWarpTarget()
 {
 	if (CombatTarget)
 	{
+		// 캐릭터가 CombatTarget 방향으로 회전하기 위해, CombatTarget 위치 return
 		return CombatTarget->GetActorLocation();
 	}
 	return FVector();
@@ -288,16 +307,6 @@ void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collision
 void ABaseCharacter::SetMeshCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
 {
 	GetMesh()->SetCollisionEnabled(CollisionEnabled);
-}
-
-void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName)
-{
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && Montage)
-	{
-		AnimInstance->Montage_Play(Montage);
-		AnimInstance->Montage_JumpToSection(SectionName, Montage);
-	}
 }
 
 int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames)

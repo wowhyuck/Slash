@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -37,15 +37,15 @@ protected:
 	virtual	void Attack();
 	virtual void Block();
 	virtual void Die();
-	void DirectionalHitReact(const FVector& ImpactPoint);
-	virtual void HandleDamage(float DamageAmount);
+	void DirectionalHitReact(const FVector& ImpactPoint);	
+	virtual void HandleDamage(float DamageAmount);			// 받은 데미지를 Attribute의 Health에 적용하기
 	void PlayHitSound(const FVector& ImpactPoint);
 	void SpawnHitParticles(const FVector& ImpactPoint);
 	void DisableCapsule();
 	virtual bool CanAttack();
 	bool IsAlive();
 	void DisableMeshCollision();
-	double GetThetaImpactPoint(const FVector& ImpactPoint);
+	double GetThetaImpactPoint(const FVector& ImpactPoint);	// 캐릭터 ForwardVector 기준으로 ImpactPoint의 각도 구하기
 	bool IsFront(const FVector& ImpactPoint);
 	/* /Combat */
 
@@ -60,13 +60,14 @@ protected:
 	void StopBlockMontage();
 	void PlayBlockingCounterMontage();
 	void PlayParryingCounterMontage();
+	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	/* /Montage */
 
 	UFUNCTION(BlueprintCallable)
-	FVector GetTranslationWarpTarget();
+	FVector GetTranslationWarpTarget();		// Motion Warp에서 캐릭터가 이동할 위치 구하기
 
 	UFUNCTION(BlueprintCallable)
-	FVector GetRotationWarpTarget();
+	FVector GetRotationWarpTarget();		// Motion Warp에서 캐릭터가 바라볼 CombatTarget 위치 구하기
 
 	UFUNCTION(BlueprintCallable)
 	virtual void AttackEnd();
@@ -90,7 +91,7 @@ protected:
 	AActor* CombatTarget;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
-	double WarpTargetDistance = 75.f;
+	double WarpTargetDistance = 75.f;	// Motion Warp에서 캐릭터가 이동할 위치 크기
 
 	UPROPERTY(BlueprintReadOnly)
 	TEnumAsByte<EDeathPose> DeathPose;
@@ -98,20 +99,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	TArray<FName> AttackMontageSections;
 
-	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
-
 	UPROPERTY(EditDefaultsOnly, Category = Combat)
 	UAnimMontage* AttackMontage;
 
 private:
 	/* Montage */
-
-
-
 	int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
-
-
-
 
 	UPROPERTY(EditDefaultsOnly, Category = Combat)
 	UAnimMontage* HitReactMontage;
