@@ -19,7 +19,6 @@ public:
 	void SetHealthBarPercent(float Percent);
 	void SetStaminaBarPercent(float Percent);
 	void SetGold(int32 Gold);
-	void SetSouls(int32 Souls);
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -30,8 +29,4 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* GoldText;
-
-	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* SoulsText;
-
 };

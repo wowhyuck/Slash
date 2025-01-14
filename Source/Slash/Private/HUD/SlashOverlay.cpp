@@ -31,13 +31,3 @@ void USlashOverlay::SetGold(int32 Gold)
 		GoldText->SetText(Text);
 	}
 }
-
-void USlashOverlay::SetSouls(int32 Souls)
-{
-	if (SoulsText)
-	{
-		const FString String = FString::Printf(TEXT("%d"), Souls);
-		const FText Text = FText::FromString(String);
-		SoulsText->SetText(Text);
-	}
-}

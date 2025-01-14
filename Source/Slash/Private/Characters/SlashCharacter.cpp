@@ -50,49 +50,29 @@ ASlashCharacter::ASlashCharacter()
 	Eyebrows->SetupAttachment(GetMesh());
 	Eyebrows->AttachmentName = FString("head");
 
-	if (Attributes)
-	{
-		DodgeCost = Attributes->GetDodgeCost();
-		StartBlockCost = Attributes->GetStartBlockCost();
-		StaminaRegenRate = Attributes->GetDefaultStaminaRegenRate();
-	}
+	SetVariablesByAttribute();
 }
 
 void ASlashCharacter::Tick(float DeltaTime)
 {
-	if (Attributes && SlashOverlay)
-	{
-		Attributes->RegenStamina(DeltaTime, StaminaRegenRate);
-		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
-	}
+	UpdateSlashOverlay(DeltaTime);
 }
 
 float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	FVector EnemyWeaponLocation = DamageCauser->GetActorLocation();
-	bBlockAttack = IsFront(EnemyWeaponLocation) && ActionState == EActionState::EAS_Blocking;
+	// 적의 공격을 받을 때, 적의 무기가 캐릭터 앞에 있을 때 && 캐릭터가 막기 중일 때 -> 막기 성공 
+	bBlockAttack = IsFront(DamageCauser->GetActorLocation()) && ActionState == EActionState::EAS_Blocking;
 	
-	// 공격 막기 성공했을 때 -> Weapon Location = ImpactPoint 해서 bBlockAttack = true로 만들기
+	// 공격 막기 성공했을 경우 -> Weapon Location = ImpactPoint 해서 bBlockAttack = true로 만들기
 	if (bBlockAttack)
 	{
 		bCanCounter = true;
-		GetWorldTimerManager().SetTimer(CanCounterTimer, this, &ASlashCharacter::ChangebCanCounter, CanCounterTime);
+		SetCanCounterTimer();
 
-		// 패링 성공했을 때
-		if (bCanParry)
-		{
-			PlayParrySound(EnemyWeaponLocation);
-			ChangeStaminaRegenRateBlockingToDefault();
-			IHitInterface* HitInterface = Cast<IHitInterface>(DamageCauser->GetOwner());
-			if (HitInterface)
-			{
-				HitInterface->Execute_GetHit(DamageCauser->GetOwner(), EnemyWeaponLocation, this);
-			}
-		}
-		else
-		{
-			PlayBlockAttackSound(EnemyWeaponLocation);
-		}
+		// True -> 적의 공격을 패링했을 때, 패링 관련 함수 실행
+		// False -> 적의 공격을 막았을 때, 막기 관련 함수 실행
+		bCanParry ? ParryingSuccess(DamageCauser) : BlockingSuccess(DamageCauser);
+
 		UseStaminaCost(BlockAttackCost);
 		HandleDamage(DamageBlocked);
 	}
@@ -135,10 +115,12 @@ void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 	// 막기 성공
 	if (bBlockAttack)
 	{
+		// 막기 스태미나가 충분히 있을 경우
 		if (HasEnoughStamina(BlockAttackCost))
 		{
 			PlayBlockReactMontage();
 		}
+		// 막기 스태미나가 부족할 경우 -> Blocking 풀기
 		else
 		{
 			PlayHitReactMontage("FromFront");
@@ -165,6 +147,7 @@ void ASlashCharacter::AddSouls(ASoul* Soul)
 {
 	if (Attributes && SlashOverlay)
 	{
+		// Soul을 먹었을 때 -> 캐릭터 Health 회복
 		Attributes->AddHealth(Soul->GetRecovery());
 		SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
 	}
@@ -193,14 +176,19 @@ void ASlashCharacter::Attack()
 {
 	if (IsOccupied() || IsFalling()) return;
 
-	GetWorldTimerManager().ClearTimer(ResetComboTimer);
+	ClearResetComboTimer();
 
 	Super::Attack();
 	if (CanAttack())
 	{
-		bCanCounter ? Counter() : PlayAttackMontage();
 		ActionState = EActionState::EAS_Attacking;
 
+		// True -> 반격
+		// False -> 일반 공격
+		bCanCounter ? Counter() : PlayAttackMontage();
+
+		// CurrentCombo == MaxCombo일 때, CurrentCombo를 0으로 초기화
+		// CurrentCombo != MaxCombo일 때, CurrentCombo에 1 더하기
 		CurrentCombo = (CurrentCombo == MaxCombo) ? 0 : FMath::Clamp(CurrentCombo + 1, 0, MaxCombo);
 	}
 }
@@ -210,12 +198,17 @@ void ASlashCharacter::Block()
 	if (IsOccupied() || IsFalling() || !HasEnoughStamina(StartBlockCost) || CharacterState != ECharacterState::ECS_EquippedOneHandedWeapon) return;
 
 	bCanParry = true;
+
+	// 막기 중일 때, CapsuleComponent를 WorldDynamic 타입으로 변경하기 
+	// -> 적의 Weapon의 BoxComponent와 오버랩하기 위해 
+	// -> 적 Weapon이 캐릭터 Mesh와 오버랩할 때, 방향 에러가 많이 발생
 	GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	ClearStaminaRegenTimer();
-	//ClearCanCounterTimer();
 	PlayBlockMontage();
 	ActionState = EActionState::EAS_Blocking;
 	UseStaminaCost(StartBlockCost);
+
+	// 막기 했을 때, 기존 스태미나 회복율을 막기 중 스태미나 회복율로 바꾸기
+	ClearStaminaRegenTimer();
 	if (Attributes)
 	{
 		StaminaRegenRate = Attributes->GetBlockingStaminaRegenRate();
@@ -225,11 +218,6 @@ void ASlashCharacter::Block()
 int32 ASlashCharacter::PlayAttackMontage()
 {
 	PlayMontageSection(AttackMontage, AttackMontageSections[CurrentCombo]);
-
-	if (CanNextCombo)
-	{
-	}
-
 	return CurrentCombo;
 }
 
@@ -295,9 +283,9 @@ void ASlashCharacter::Dodge()
 {
 	if (IsOccupied() || IsFalling() || !HasEnoughStamina(DodgeCost)) return;
 
-	PlayDodgeMontage();
 	ActionState = EActionState::EAS_Dodge;
 
+	PlayDodgeMontage();
 	UseStaminaCost(DodgeCost);
 }
 
@@ -307,13 +295,17 @@ void ASlashCharacter::BlockEnd()
 	GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
 	StopBlockMontage();
 	ActionState = Attributes->GetHealth() > 0.f ? EActionState::EAS_Unoccupied : EActionState::EAS_Dead;
-	GetWorldTimerManager().SetTimer(StaminaRegenTimer, this, &ASlashCharacter::ChangeStaminaRegenRateBlockingToDefault, StartStaminaRegenTime);
+	
+	// StaminaRegenTimer가 끝나면, DefaultStaminaRegenRate로 바꾸기
+	SetDefaultStaminaRegenTimer();
 }
 
 void ASlashCharacter::AttackEnd()
 {
 	ActionState = EActionState::EAS_Unoccupied;
-	GetWorldTimerManager().SetTimer(ResetComboTimer, this, &ASlashCharacter::ResetCurrentCombo, ResetComboTime);
+
+	// 공격이 끝나면, ResetComboTime까지 콤보 가능
+	SetResetComboTimer();
 }
 
 void ASlashCharacter::DodgeEnd()
@@ -449,6 +441,29 @@ void ASlashCharacter::HitReactEnd()
 	ActionState = EActionState::EAS_Unoccupied;
 }
 
+void ASlashCharacter::SetVariablesByAttribute()
+{
+	// SlashCharacter의 변수와 Attribute의 변수와 일치시키기
+	if (Attributes)
+	{
+		DodgeCost = Attributes->GetDodgeCost();
+		StartBlockCost = Attributes->GetStartBlockCost();
+		StaminaRegenRate = Attributes->GetDefaultStaminaRegenRate();
+		StartStaminaRegenTime = Attributes->GetStartStaminaRegenTime();
+		BlockAttackCost = Attributes->GetBlockAttackCost();
+	}
+}
+
+void ASlashCharacter::UpdateSlashOverlay(float DeltaTime)
+{
+	// SlashOverlay의 Widget을 매 Tick마다 업데이트
+	if (Attributes && SlashOverlay)
+	{
+		Attributes->RegenStamina(DeltaTime, StaminaRegenRate);
+		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
+	}
+}
+
 bool ASlashCharacter::IsUnoccupied()
 {
 	return ActionState == EActionState::EAS_Unoccupied;
@@ -469,12 +484,13 @@ void ASlashCharacter::InitializeSlashOverlay()
 		if (SlashHUD)
 		{
 			SlashOverlay = SlashHUD->GetSlashOverlay();
+
+			// SlashOverlay의 Widget 값들 초기화
 			if (SlashOverlay && Attributes)
 			{
 				SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
 				SlashOverlay->SetStaminaBarPercent(1.f);
 				SlashOverlay->SetGold(0);
-				SlashOverlay->SetSouls(0);
 			}
 		}
 	}
@@ -510,17 +526,50 @@ void ASlashCharacter::ChangebCanCounter()
 	bCanCounter = false;
 }
 
+void ASlashCharacter::SetDefaultStaminaRegenTimer()
+{
+	GetWorldTimerManager().SetTimer(StaminaRegenTimer, this, &ASlashCharacter::ChangeStaminaRegenRateBlockingToDefault, StartStaminaRegenTime);
+}
+
 void ASlashCharacter::ClearStaminaRegenTimer()
 {
 	GetWorldTimerManager().ClearTimer(StaminaRegenTimer);
 }
 
-void ASlashCharacter::ClearCanCounterTimer()
+void ASlashCharacter::SetCanCounterTimer()
 {
-	GetWorldTimerManager().ClearTimer(CanCounterTimer);
+	GetWorldTimerManager().SetTimer(CanCounterTimer, this, &ASlashCharacter::ChangebCanCounter, CanCounterTime);
+}
+
+void ASlashCharacter::SetResetComboTimer()
+{
+	GetWorldTimerManager().SetTimer(ResetComboTimer, this, &ASlashCharacter::ResetCurrentCombo, ResetComboTime);
+}
+
+void ASlashCharacter::ClearResetComboTimer()
+{
+	GetWorldTimerManager().ClearTimer(ResetComboTimer);
 }
 
 void ASlashCharacter::ResetCurrentCombo()
 {
 	CurrentCombo = 0;
+}
+
+void ASlashCharacter::ParryingSuccess(AActor* EnemyWeapon)
+{
+	PlayParrySound(EnemyWeapon->GetActorLocation());
+	ChangeStaminaRegenRateBlockingToDefault();
+	
+	// 적이 패링 당했을 때 Attack Animation 중지시키기
+	IHitInterface* HitInterface = Cast<IHitInterface>(EnemyWeapon->GetOwner());
+	if (HitInterface)
+	{
+		HitInterface->Execute_GetHit(EnemyWeapon->GetOwner(), EnemyWeapon->GetActorLocation(), this);
+	}
+}
+
+void ASlashCharacter::BlockingSuccess(AActor* EnemyWeapon)
+{
+	PlayBlockAttackSound(EnemyWeapon->GetActorLocation());
 }

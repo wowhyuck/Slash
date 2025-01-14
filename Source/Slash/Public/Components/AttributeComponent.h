@@ -36,6 +36,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float MaxStamina;
 
+	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
+	float StartStaminaRegenTime = 3.f;
+
 	UPROPERTY(VisibleAnywhere, Category = "Actor Attributes")
 	int32 Gold;
 
@@ -44,6 +47,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float StartBlockCost = 5.f;									// Block 키를 눌렀을 때 비용
+
+	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
+	float BlockAttackCost = 10.f;
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float DefaultStaminaRegenRate = 5.f;
@@ -63,7 +69,9 @@ public:
 	FORCEINLINE int32 GetGold() const { return Gold; }
 	FORCEINLINE float GetDodgeCost() const { return DodgeCost; }
 	FORCEINLINE float GetStartBlockCost() const { return StartBlockCost; }
+	FORCEINLINE float GetBlockAttackCost() const { return BlockAttackCost; }
 	FORCEINLINE float GetStamina() const { return Stamina; }
+	FORCEINLINE float GetStartStaminaRegenTime() const { return StartStaminaRegenTime; }
 	FORCEINLINE float GetDefaultStaminaRegenRate() const { return DefaultStaminaRegenRate; }
 	FORCEINLINE float GetBlockingStaminaRegenRate() const { return BlockingStaminaRegenRate; }
 	

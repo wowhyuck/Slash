@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -88,7 +88,7 @@ protected:
 	bool IsOccupied();
 	void PlayBlockAttackSound(const FVector& ImpactPoint);
 	void PlayParrySound(const FVector& ImpactPoint);
-	void Counter();
+	void Counter();		// Block 성공 후, Attack
 
 	UFUNCTION(BlueprintCallable)
 	void AttachWeaponToBack();
@@ -107,16 +107,23 @@ protected:
 	/* /Combat */
 
 private:
+	void SetVariablesByAttribute();		// Attribute의 Getter로 변수 초기화
+	void UpdateSlashOverlay(float DeltaTime);
 	bool IsUnoccupied();
 	bool IsFalling();
-	void InitializeSlashOverlay();
-	void SetHUDHealth();
+	void InitializeSlashOverlay();		// SlashOverlay의 HealthBar, StaminaBar, Gold 초기화
+	void SetHUDHealth();				// HealthBar 업데이트
 	void UseStaminaCost(const float& StaminaCost);
-	void ChangeStaminaRegenRateBlockingToDefault();
+	void ChangeStaminaRegenRateBlockingToDefault();		// Blocking->Default의 Stamina Regen Rate로 업데이트
 	void ChangebCanCounter();
+	void SetDefaultStaminaRegenTimer();
 	void ClearStaminaRegenTimer();
-	void ClearCanCounterTimer();
-	void ResetCurrentCombo();
+	void SetCanCounterTimer();
+	void SetResetComboTimer();
+	void ClearResetComboTimer();
+	void ResetCurrentCombo();		// ResetComboTimer가 끝날 때, CurrentCombo = 0으로 초기화
+	void ParryingSuccess(AActor* EnemyWeapon);		// 패링 성공했을 때, 실행되는 함수
+	void BlockingSuccess(AActor* EnemyWeapon);							// 막기 성공했을 때, 실행되는 함수
 
 	/* Character components */
 	UPROPERTY(VisibleAnywhere)
@@ -152,23 +159,28 @@ private:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	USoundBase* ParrySound;
 
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float DamageBlocked = 0.f;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float CanCounterTime = 3.0;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float ResetComboTime = 1.f;
+
 	float DodgeCost;
 	float StartBlockCost;
 	float StaminaRegenRate;
-	float StartStaminaRegenTime = 3.f;
+	float StartStaminaRegenTime;
 	FTimerHandle StaminaRegenTimer;
 	bool bBlockAttack = false;
-	float BlockAttackCost = 10.f;
-	float DamageBlocked = 0.f;
+	float BlockAttackCost;
 	bool bCanParry = false;
 	bool bCanCounter = false;
-	float CanCounterTime = 3.0;
 	FTimerHandle CanCounterTimer;
-	bool CanNextCombo = false;
 	int32 CurrentCombo = 0;
 	int32 MaxCombo;
 	FTimerHandle ResetComboTimer;
-	float ResetComboTime = 1.f;
 
 public:
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
