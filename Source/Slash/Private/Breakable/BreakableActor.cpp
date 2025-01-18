@@ -5,6 +5,8 @@
 #include "GeometryCollection/GeometryCollectionComponent.h"
 #include "Items/Treasure.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Perception/AISenseConfig_Hearing.h"
 
 ABreakableActor::ABreakableActor()
 {
@@ -49,5 +51,12 @@ void ABreakableActor::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 
 		World->SpawnActor<ATreasure>(TreasureClaases[Selection], Location, GetActorRotation());
 	}
+
+	UGameplayStatics::PlaySoundAtLocation(
+		this,
+		BrokenSound,
+		ImpactPoint);
+
+	UAISense_Hearing::ReportNoiseEvent(GetWorld(), GetActorLocation(), 1.f, this);
 }
 

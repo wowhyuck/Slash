@@ -11,6 +11,9 @@
 #include "Perception/PawnSensingComponent.h"
 #include "Items/Weapons/Weapon.h"
 #include "Items/Soul.h"
+#include "Perception/AIPerceptionTypes.h"
+#include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISenseConfig_Hearing.h"
 
 AEnemy::AEnemy()
 {
@@ -32,6 +35,11 @@ AEnemy::AEnemy()
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
 	PawnSensing->SightRadius = 4000.f;
 	PawnSensing->SetPeripheralVisionAngle(45.f);
+
+	AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
+
+	HearingConfig = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("HearingConfig"));
+	AIPerception->ConfigureSense(*HearingConfig);
 }
 
 void AEnemy::Tick(float DeltaTime)
@@ -90,13 +98,17 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	InitializeEnemy();
+	Tags.Add(FName("Enemy"));
+
 	if (PawnSensing)
 	{
 		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
 	}
-
-	InitializeEnemy();
-	Tags.Add(FName("Enemy"));
+	if (AIPerception)
+	{
+		AIPerception->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemy::SenseNoise);
+	}
 }
 
 void AEnemy::Die()
@@ -108,6 +120,7 @@ void AEnemy::Die()
 	DisableCapsule();
 	SetLifeSpan(DeathLifeSpan);
 	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 	SpawnSoul();
 }
@@ -343,6 +356,8 @@ void AEnemy::SpawnDefaultWeapon()
 
 void AEnemy::PawnSeen(APawn* SeenPawn)
 {
+	UE_LOG(LogTemp, Warning, TEXT("SeenPawn : %s"), *SeenPawn->GetName());
+
 	const bool bShouldChaseTarget =
 		EnemyState != EEnemyState::EES_Dead &&
 		EnemyState != EEnemyState::EES_Chasing &&
@@ -355,6 +370,11 @@ void AEnemy::PawnSeen(APawn* SeenPawn)
 		ClearPatrolTimer();
 		ChaseTarget();
 	}
+}
+
+void AEnemy::SenseNoise(AActor* NoiseActor, FAIStimulus Stimulus)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Sense Noise"));
 }
 
 

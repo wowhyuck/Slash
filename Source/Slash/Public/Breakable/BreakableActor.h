@@ -28,6 +28,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class UCapsuleComponent* Capsule;
+
+	UPROPERTY(EditAnywhere)
+	class USoundBase* BrokenSound;
+	
 private:	
 	UPROPERTY(EditAnywhere, Category = "Breakable Properties")
 	TArray<TSubclassOf<class ATreasure>> TreasureClaases;

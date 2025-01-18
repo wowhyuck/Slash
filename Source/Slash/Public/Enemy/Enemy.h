@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Characters/BaseCharacter.h"
 #include "Characters/CharacterTypes.h"
+#include "Perception/AIPerceptionTypes.h"
 #include "Enemy.generated.h"
 
 class UHealthBarComponent;
@@ -46,6 +47,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 
+	// AI Perception
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UAIPerceptionComponent* AIPerception;
+
+	class UAISenseConfig_Hearing* HearingConfig;
+
 private:
 	/* AI Behavior */
 	void InitializeEnemy();
@@ -74,6 +81,9 @@ private:
 
 	UFUNCTION()
 	void PawnSeen(APawn* SeenPawn);		// Callback for OnPawnSeen in UPawnSensingComponent
+
+	UFUNCTION()
+	void SenseNoise(AActor* NoiseActor, FAIStimulus Stimulus);
 
 	UPROPERTY(VisibleAnywhere)
 	UHealthBarComponent* HealthBarWidget;
