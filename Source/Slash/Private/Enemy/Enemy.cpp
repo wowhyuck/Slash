@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Enemy/Enemy.h"
@@ -103,7 +103,7 @@ void AEnemy::BeginPlay()
 
 	if (PawnSensing)
 	{
-		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
+		//PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
 	}
 	if (AIPerception)
 	{
@@ -313,6 +313,12 @@ bool AEnemy::InTargetRange(AActor* Target, double Radius)
 	return DistanceToTarget <= Radius;
 }
 
+bool AEnemy::InLocationRange(FVector Location, double Radius)
+{
+	const double Distance = (Location - GetActorLocation()).Size();
+	return Distance <= Radius;
+}
+
 void AEnemy::MoveToTarget(AActor* Target)
 {
 	if (EnemyController == nullptr || Target == nullptr) return;
@@ -375,6 +381,17 @@ void AEnemy::PawnSeen(APawn* SeenPawn)
 void AEnemy::SenseNoise(AActor* NoiseActor, FAIStimulus Stimulus)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Sense Noise"));
+	
+	FVector StartLocation = GetActorLocation();
+	FVector NoiseLocation = NoiseActor->GetActorLocation();
+	EnemyController->MoveToLocation(NoiseLocation);
+
+	/* NoiseLocation에 도착했을 때 원래 자리로 돌아가기 */
+	if (InLocationRange(NoiseLocation, PatrolRadius))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("InLocationRange"));
+		EnemyController->MoveToLocation(StartLocation);
+	}
 }
 
 

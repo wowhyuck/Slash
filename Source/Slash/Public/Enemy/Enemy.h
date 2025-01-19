@@ -75,6 +75,7 @@ private:
 	void StartAttackTimer();
 	void ClearAttackTimer();
 	bool InTargetRange(AActor* Target, double Radius);
+	bool InLocationRange(FVector Location, double Radius);
 	void MoveToTarget(AActor* Target);
 	AActor* ChoosePatrolTarget();
 	void SpawnDefaultWeapon();
