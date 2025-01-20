@@ -52,6 +52,7 @@ protected:
 	class UAIPerceptionComponent* AIPerception;
 
 	class UAISenseConfig_Hearing* HearingConfig;
+	FVector LocationSearched;
 
 private:
 	/* AI Behavior */
@@ -79,6 +80,7 @@ private:
 	void MoveToTarget(AActor* Target);
 	AActor* ChoosePatrolTarget();
 	void SpawnDefaultWeapon();
+	void SearchingLocation();
 
 	UFUNCTION()
 	void PawnSeen(APawn* SeenPawn);		// Callback for OnPawnSeen in UPawnSensingComponent

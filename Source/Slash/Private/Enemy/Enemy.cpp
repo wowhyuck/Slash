@@ -47,9 +47,13 @@ void AEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (IsDead()) return;
-	if (EnemyState > EEnemyState::EES_Patrolling)
+	if (EnemyState > EEnemyState::EES_Searching)
 	{
 		CheckCombatTarget();
+	}
+	else if (EnemyState == EEnemyState::EES_Searching)
+	{
+		SearchingLocation();
 	}
 	else
 	{
@@ -243,7 +247,7 @@ void AEnemy::StartPatrolling()
 {
 	EnemyState = EEnemyState::EES_Patrolling;
 	GetCharacterMovement()->MaxWalkSpeed = PatrollingSpeed;
-	MoveToTarget(PatrolTarget);
+	PatrolTargets.Num() > 1 ? MoveToTarget(PatrolTarget) : MoveToTarget(PatrolTargets[0]);
 }
 
 void AEnemy::ChaseTarget()
@@ -360,6 +364,18 @@ void AEnemy::SpawnDefaultWeapon()
 	}
 }
 
+void AEnemy::SearchingLocation()
+{
+	if (InLocationRange(LocationSearched, PatrolRadius))
+	{
+		StartPatrolling();
+	}
+	else
+	{
+		EnemyController->MoveToLocation(LocationSearched);
+	}
+}
+
 void AEnemy::PawnSeen(APawn* SeenPawn)
 {
 	UE_LOG(LogTemp, Warning, TEXT("SeenPawn : %s"), *SeenPawn->GetName());
@@ -380,18 +396,9 @@ void AEnemy::PawnSeen(APawn* SeenPawn)
 
 void AEnemy::SenseNoise(AActor* NoiseActor, FAIStimulus Stimulus)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Sense Noise"));
-	
-	FVector StartLocation = GetActorLocation();
-	FVector NoiseLocation = NoiseActor->GetActorLocation();
-	EnemyController->MoveToLocation(NoiseLocation);
-
-	/* NoiseLocation에 도착했을 때 원래 자리로 돌아가기 */
-	if (InLocationRange(NoiseLocation, PatrolRadius))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("InLocationRange"));
-		EnemyController->MoveToLocation(StartLocation);
-	}
+	if (EnemyState > EEnemyState::EES_Searching) return;
+	EnemyState = EEnemyState::EES_Searching;
+	LocationSearched = NoiseActor->GetActorLocation();
 }
 
 
