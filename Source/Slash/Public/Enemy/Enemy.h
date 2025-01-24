@@ -51,6 +51,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UAIPerceptionComponent* AIPerception;
 
+	UPROPERTY(EditAnywhere)
+	class USoundBase* ScreamingSound;
+
 	class UAISenseConfig_Hearing* HearingConfig;
 	FVector LocationSearched;
 
