@@ -115,7 +115,7 @@ void AEnemy::BeginPlay()
 
 	if (PawnSensing)
 	{
-		//PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
+		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
 	}
 	if (AIPerception)
 	{
@@ -253,6 +253,7 @@ void AEnemy::LoseInterest()
 
 void AEnemy::StartPatrolling()
 {
+	UE_LOG(LogTemp, Warning, TEXT("StartPatrolling"));
 	EnemyState = EEnemyState::EES_Patrolling;
 	GetCharacterMovement()->MaxWalkSpeed = PatrollingSpeed;
 	PatrolTargets.Num() > 1 ? MoveToTarget(PatrolTarget) : MoveToTarget(PatrolTargets[0]);
@@ -404,7 +405,7 @@ void AEnemy::PawnSeen(APawn* SeenPawn)
 
 void AEnemy::SenseNoise(AActor* NoiseActor, FAIStimulus Stimulus)
 {
-	if (EnemyState > EEnemyState::EES_Searching) return;
+	if (EnemyState > EEnemyState::EES_Searching || IsDead()) return;
 	EnemyState = EEnemyState::EES_Searching;
 	LocationSearched = NoiseActor->GetActorLocation();
 }
