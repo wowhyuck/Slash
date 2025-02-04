@@ -195,7 +195,7 @@ void ASlashCharacter::Attack()
 
 void ASlashCharacter::Block()
 {
-	if (IsOccupied() || IsFalling() || !HasEnoughStamina(StartBlockCost) || CharacterState != ECharacterState::ECS_EquippedOneHandedWeapon) return;
+	if (IsOccupied() || IsFalling() || !HasEnoughStamina(StartBlockCost) || CharacterState == ECharacterState::ECS_Unequipped) return;
 
 	bCanParry = true;
 
@@ -233,6 +233,8 @@ void ASlashCharacter::MoveForward(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
 	}
+
+	FrontValue = Value;
 }
 
 void ASlashCharacter::MoveRight(float Value)
@@ -247,6 +249,8 @@ void ASlashCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		AddMovementInput(Direction, Value);
 	}
+
+	RightValue = Value;
 }
 
 void ASlashCharacter::Turn(float Value)
@@ -323,7 +327,7 @@ bool ASlashCharacter::CanAttack()
 void ASlashCharacter::EquipWeapon(AWeapon* Weapon)
 {
 	Weapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
-	CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+	CharacterState = ECharacterState::ECS_EquippedWeapon;
 	OverlappingItem = nullptr;
 	EquippedWeapon = Weapon;
 }
@@ -351,7 +355,7 @@ void ASlashCharacter::Disarm()
 void ASlashCharacter::Arm()
 {
 	PlayEquipMontage(FName("Equip"));
-	CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+	CharacterState = ECharacterState::ECS_EquippedWeapon;
 	ActionState = EActionState::EAS_EquippingWeapon;
 }
 

@@ -41,4 +41,13 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	TEnumAsByte<EDeathPose> DeathPose;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
+	float MovementOffsetYaw;
+
+	UPROPERTY(BlueprintReadWrite, Category = Movement)
+	float FrontValue;
+
+	UPROPERTY(BlueprintReadWrite, Category = Movement)
+	float RightValue;
 };

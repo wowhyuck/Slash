@@ -49,6 +49,9 @@ public:
 	virtual void AddGold(ATreasure* Treasure) override;
 	/* </IPickupInterface> */
 
+	float FrontValue;
+	float RightValue;
+
 protected:
 	/* <AActor> */
 	virtual void BeginPlay() override;
@@ -145,6 +148,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* EquipMontage;
 
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))

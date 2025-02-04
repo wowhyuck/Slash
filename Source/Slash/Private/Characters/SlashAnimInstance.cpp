@@ -30,4 +30,11 @@ void USlashAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		ActionState = SlashCharacter->GetActionState();
 		DeathPose = SlashCharacter->GetDeathPose();
 	}
+
+	if (SlashCharacter)
+	{
+		//MovementOffsetYaw = UKismetMathLibrary::MakeRotFromX(SlashCharacter->GetVelocity()).Yaw;
+		FrontValue = SlashCharacter->FrontValue;
+		RightValue = SlashCharacter->RightValue;
+	}
 }
