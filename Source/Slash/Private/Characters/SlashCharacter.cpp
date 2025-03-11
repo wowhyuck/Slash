@@ -17,6 +17,7 @@
 #include "Items/Weapons/Weapon.h"
 #include "HUD/SlashHUD.h"
 #include "HUD/SlashOverlay.h"
+#include "Engine/World.h"
 
 ASlashCharacter::ASlashCharacter()
 {
@@ -55,7 +56,10 @@ ASlashCharacter::ASlashCharacter()
 
 void ASlashCharacter::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
+
 	UpdateSlashOverlay(DeltaTime);
+
 }
 
 float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
