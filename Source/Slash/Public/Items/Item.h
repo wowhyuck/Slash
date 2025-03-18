@@ -35,9 +35,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine Parameters")
 	float TimeConstant = 5.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest")
-	FName QuestID;
-
 	UFUNCTION(BlueprintCallable)
 	float TransformedSin();
 
