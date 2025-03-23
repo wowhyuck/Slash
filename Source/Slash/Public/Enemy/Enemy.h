@@ -57,6 +57,9 @@ protected:
 	class UAISenseConfig_Hearing* HearingConfig;
 	FVector LocationSearched;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest")
+	FString ObjectiveID;
+
 private:
 	/* AI Behavior */
 	void InitializeEnemy();
