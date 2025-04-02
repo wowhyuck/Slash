@@ -61,6 +61,7 @@ protected:
 	void PlayBlockingCounterMontage();
 	void PlayParryingCounterMontage();
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
+	int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
 	/* /Montage */
 
 	UFUNCTION(BlueprintCallable)
@@ -87,7 +88,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UAttributeComponent* Attributes;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Combat)
 	AActor* CombatTarget;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
@@ -104,8 +105,6 @@ protected:
 
 private:
 	/* Montage */
-	int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
-
 	UPROPERTY(EditDefaultsOnly, Category = Combat)
 	UAnimMontage* HitReactMontage;
 

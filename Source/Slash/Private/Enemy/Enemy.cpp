@@ -98,6 +98,10 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	StopAttackMontage();
+	if (IsInsideAttackRadius())
+	{
+		if (!IsDead()) StartAttackTimer();
+	}
 
 	UGameplayStatics::PlaySoundAtLocation(
 		this,
@@ -144,6 +148,19 @@ void AEnemy::Attack()
 
 	EnemyState = EEnemyState::EES_Engaged;
 	PlayAttackMontage();
+}
+
+int32 AEnemy::PlayAttackMontage()
+{
+	if (bSeeTarget)
+	{
+		return PlayRandomMontageSection(AttackMontage, AttackMontageSections);
+	}
+	else
+	{
+		PlayMontageSection(AttackMontage, AttackMontageSections[0]);
+		return 0;
+	}
 }
 
 bool AEnemy::CanAttack()
@@ -337,7 +354,7 @@ void AEnemy::MoveToTarget(AActor* Target)
 	if (EnemyController == nullptr || Target == nullptr) return;
 	FAIMoveRequest MoveRequest;
 	MoveRequest.SetGoalActor(Target);
-	MoveRequest.SetAcceptanceRadius(50.f);
+	MoveRequest.SetAcceptanceRadius(AcceptanceRadius);
 	EnemyController->MoveTo(MoveRequest);
 }
 
@@ -388,6 +405,8 @@ void AEnemy::SearchingLocation()
 void AEnemy::PawnSeen(APawn* SeenPawn)
 {
 	UE_LOG(LogTemp, Warning, TEXT("SeenPawn : %s"), *SeenPawn->GetName());
+	bSeeTarget = true;
+	GetWorldTimerManager().SetTimer(SeeTargetTimer, this, &AEnemy::NotSeeTarget, 0.5);
 
 	const bool bShouldChaseTarget =
 		EnemyState != EEnemyState::EES_Dead &&
@@ -410,6 +429,10 @@ void AEnemy::SenseNoise(AActor* NoiseActor, FAIStimulus Stimulus)
 	LocationSearched = NoiseActor->GetActorLocation();
 }
 
+void AEnemy::NotSeeTarget()
+{
+	bSeeTarget = false;
+}
 
 
 
