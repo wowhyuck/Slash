@@ -108,6 +108,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ParryEnd();
 	/* /Combat */
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsGameFinished = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bClearGame = false;
 
 private:
 	void SetVariablesByAttribute();		// Attribute의 Getter로 변수 초기화
