@@ -3,6 +3,7 @@
 
 #include "Enemy/Boss.h"
 #include "AIController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 ABoss::ABoss()
@@ -12,7 +13,11 @@ ABoss::ABoss()
 
 void ABoss::Tick(float DeltaTime)
 {
-
+	if (IsDead()) return;
+	if (EnemyState > EEnemyState::EES_Searching)
+	{
+		CheckCombatTarget();
+	}
 }
 
 float ABoss::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
@@ -56,4 +61,36 @@ void ABoss::InitializeEnemy()
 {
 	EnemyController = Cast<AAIController>(GetController());
 	SpawnDefaultWeapon();
+}
+
+void ABoss::CheckCombatTarget()
+{
+	if (!IsInsideJumpAttackRadius())
+	{
+		ChaseTarget(ChasingSpeed);
+	}
+	else if(IsInsideJumpAttackRadius())
+	{
+		ClearAttackTimer();
+		if (!IsEngaged())
+		{
+			ChaseTarget(ChasingWalkSpeed);
+		}
+	}
+	else if (CanAttack())
+	{
+		StartAttackTimer();
+	}
+}
+
+void ABoss::ChaseTarget(float Speed)
+{
+	EnemyState = EEnemyState::EES_Chasing;
+	GetCharacterMovement()->MaxWalkSpeed = Speed;
+	MoveToTarget(CombatTarget);
+}
+
+bool ABoss::IsInsideJumpAttackRadius()
+{
+	return InTargetRange(CombatTarget, JumpAttackRadius);
 }

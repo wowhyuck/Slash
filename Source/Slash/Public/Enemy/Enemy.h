@@ -37,19 +37,39 @@ protected:
 	/* <ABaseCharacter> */
 	virtual void Die() override;
 	virtual	void Attack() override;
+	virtual int32 PlayAttackMontage() override;
 	virtual bool CanAttack() override;
 	virtual void AttackEnd() override;
 	virtual void HandleDamage(float DamageAmount) override;
 	/* </ABaseCharacter> */
 
-	void SpawnSoul();
+	virtual void InitializeEnemy();
+	virtual void CheckCombatTarget();
 
-	UPROPERTY(BlueprintReadOnly)
+
+	void SpawnSoul();
+	void SpawnDefaultWeapon();
+	bool IsDead();
+	void ChaseTarget();
+	bool IsOutsideCombatRadius();
+	bool IsOutsideAttackRadius();
+	bool IsChasing();
+	bool IsEngaged();
+	void ClearAttackTimer();
+	void StartAttackTimer();
+	bool InTargetRange(AActor* Target, double Radius);
+	void MoveToTarget(AActor* Target);
+
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 
 	// AI Perception
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UAIPerceptionComponent* AIPerception;
+
+	UPROPERTY()
+	class AAIController* EnemyController;
 
 	UPROPERTY(EditAnywhere)
 	class USoundBase* ScreamingSound;
@@ -60,32 +80,25 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest")
 	FString ObjectiveID;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat)
+	float ChasingSpeed = 300.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat)
+	float ChasingWalkSpeed = 130.f;
+
 private:
 	/* AI Behavior */
-	void InitializeEnemy();
 	void CheckPatrolTarget();
-	void CheckCombatTarget();
 	void PatrolTimerFinished();
 	void HideHealthBar();
 	void ShowHealthBar();
 	void LoseInterest();
 	void StartPatrolling();
-	void ChaseTarget();
-	bool IsOutsideCombatRadius();
-	bool IsOutsideAttackRadius();
 	bool IsInsideAttackRadius();
-	bool IsChasing();
 	bool IsAttacking();
-	bool IsDead();
-	bool IsEngaged();
 	void ClearPatrolTimer();
-	void StartAttackTimer();
-	void ClearAttackTimer();
-	bool InTargetRange(AActor* Target, double Radius);
 	bool InLocationRange(FVector Location, double Radius);
-	void MoveToTarget(AActor* Target);
 	AActor* ChoosePatrolTarget();
-	void SpawnDefaultWeapon();
 	void SearchingLocation();
 
 	UFUNCTION()
@@ -94,23 +107,25 @@ private:
 	UFUNCTION()
 	void SenseNoise(AActor* NoiseActor, FAIStimulus Stimulus);
 
+	void NotSeeTarget();
+
 	UPROPERTY(VisibleAnywhere)
 	UHealthBarComponent* HealthBarWidget;
 
 	UPROPERTY(VisibleAnywhere)
 	UPawnSensingComponent* PawnSensing;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Combat)
 	TSubclassOf<class AWeapon> WeaponClass;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Combat)
 	double CombatRadius = 500.f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Combat)
 	double AttackRadius = 150.f;
 
-	UPROPERTY()
-	class AAIController* EnemyController;
+	UPROPERTY(EditAnywhere, Category = Combat)
+	double AcceptanceRadius = 150.f;
 
 	// Current patrol target
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
@@ -142,11 +157,11 @@ private:
 	float AttackMax = 1.f;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
-	float ChasingSpeed = 300.f;
-
-	UPROPERTY(EditAnywhere, Category = Combat)
 	float DeathLifeSpan = 10.f;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	TSubclassOf<class ASoul> SoulClass;
+
+	bool bSeeTarget = false;
+	FTimerHandle SeeTargetTimer;
 };

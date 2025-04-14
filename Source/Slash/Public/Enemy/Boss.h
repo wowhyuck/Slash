@@ -39,7 +39,15 @@ protected:
 	/* </ABaseCharacter> */
 
 	virtual void InitializeEnemy() override;
+	virtual void CheckCombatTarget() override;
+
+	void ChaseTarget(float Speed);
 
 
 private:
+	bool IsInsideJumpAttackRadius();
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	double JumpAttackRadius = 750.f;
+
 };
