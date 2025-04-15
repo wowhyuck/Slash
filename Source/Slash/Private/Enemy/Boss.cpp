@@ -22,13 +22,8 @@ void ABoss::Tick(float DeltaTime)
 
 float ABoss::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
-
-	return 0;
-}
-
-void ABoss::Destroyed()
-{
-
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	return DamageAmount;
 }
 
 void ABoss::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
@@ -43,7 +38,14 @@ void ABoss::BeginPlay()
 
 void ABoss::Die()
 {
-
+	ABaseCharacter::Die();
+	EnemyState = EEnemyState::EES_Dead;
+	ClearAttackTimer();
+	DisableCapsule();
+	SetLifeSpan(DeathLifeSpan);
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 int32 ABoss::PlayAttackMontage()
@@ -54,7 +56,7 @@ int32 ABoss::PlayAttackMontage()
 
 void ABoss::HandleDamage(float DamageAmount) 
 {
-
+	ABaseCharacter::HandleDamage(DamageAmount);
 }
 
 void ABoss::InitializeEnemy()

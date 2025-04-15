@@ -20,7 +20,6 @@ public:
 	/* <AActor> */
 	virtual void Tick(float DeltaTime) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-	virtual void Destroyed() override;
 	/* </AActor> */
 
 	/* <IHitInterface> */

@@ -86,6 +86,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat)
 	float ChasingWalkSpeed = 130.f;
 
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float DeathLifeSpan = 10.f;
+
 private:
 	/* AI Behavior */
 	void CheckPatrolTarget();
@@ -155,9 +158,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	float AttackMax = 1.f;
-
-	UPROPERTY(EditAnywhere, Category = Combat)
-	float DeathLifeSpan = 10.f;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	TSubclassOf<class ASoul> SoulClass;

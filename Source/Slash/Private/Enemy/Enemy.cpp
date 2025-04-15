@@ -54,6 +54,7 @@ void AEnemy::Tick(float DeltaTime)
 	}
 	else if (EnemyState == EEnemyState::EES_Searching)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Searching"));
 		SearchingLocation();
 	}
 	else
@@ -88,6 +89,8 @@ void AEnemy::Destroyed()
 void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
 	Super::GetHit_Implementation(ImpactPoint, Hitter);
+
+	UE_LOG(LogTemp, Warning, TEXT("Enemy"));
 
 	if (!IsDead())
 	{
@@ -270,7 +273,6 @@ void AEnemy::LoseInterest()
 
 void AEnemy::StartPatrolling()
 {
-	UE_LOG(LogTemp, Warning, TEXT("StartPatrolling"));
 	EnemyState = EEnemyState::EES_Patrolling;
 	GetCharacterMovement()->MaxWalkSpeed = PatrollingSpeed;
 	PatrolTargets.Num() > 1 ? MoveToTarget(PatrolTarget) : MoveToTarget(PatrolTargets[0]);
