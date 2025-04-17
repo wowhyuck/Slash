@@ -33,7 +33,6 @@ protected:
 
 	/* <ABaseCharacter> */
 	virtual void Die() override;
-	virtual int32 PlayAttackMontage() override;
 	virtual void HandleDamage(float DamageAmount) override;
 	/* </ABaseCharacter> */
 
@@ -44,9 +43,9 @@ protected:
 
 
 private:
-	bool IsInsideJumpAttackRadius();
+	bool IsInsideWalkRadius();
 
 	UPROPERTY(EditAnywhere, Category = Combat)
-	double JumpAttackRadius = 750.f;
+	double WalkRadius = 500.f;
 
 };

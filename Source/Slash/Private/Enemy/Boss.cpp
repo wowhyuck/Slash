@@ -48,12 +48,6 @@ void ABoss::Die()
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-int32 ABoss::PlayAttackMontage()
-{
-
-	return 0;
-}
-
 void ABoss::HandleDamage(float DamageAmount) 
 {
 	ABaseCharacter::HandleDamage(DamageAmount);
@@ -67,11 +61,11 @@ void ABoss::InitializeEnemy()
 
 void ABoss::CheckCombatTarget()
 {
-	if (!IsInsideJumpAttackRadius())
+	if (!IsInsideWalkRadius())
 	{
 		ChaseTarget(ChasingSpeed);
 	}
-	else if(IsInsideJumpAttackRadius())
+	else if (IsInsideWalkRadius() && IsOutsideAttackRadius())
 	{
 		ClearAttackTimer();
 		if (!IsEngaged())
@@ -81,6 +75,7 @@ void ABoss::CheckCombatTarget()
 	}
 	else if (CanAttack())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Attack"));
 		StartAttackTimer();
 	}
 }
@@ -92,7 +87,8 @@ void ABoss::ChaseTarget(float Speed)
 	MoveToTarget(CombatTarget);
 }
 
-bool ABoss::IsInsideJumpAttackRadius()
+bool ABoss::IsInsideWalkRadius()
 {
-	return InTargetRange(CombatTarget, JumpAttackRadius);
+	return InTargetRange(CombatTarget, WalkRadius);
 }
+

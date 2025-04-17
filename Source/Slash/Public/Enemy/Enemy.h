@@ -53,6 +53,8 @@ protected:
 	void ChaseTarget();
 	bool IsOutsideCombatRadius();
 	bool IsOutsideAttackRadius();
+	bool IsInsideAttackRadius();
+	bool IsAttacking();
 	bool IsChasing();
 	bool IsEngaged();
 	void ClearAttackTimer();
@@ -97,8 +99,6 @@ private:
 	void ShowHealthBar();
 	void LoseInterest();
 	void StartPatrolling();
-	bool IsInsideAttackRadius();
-	bool IsAttacking();
 	void ClearPatrolTimer();
 	bool InLocationRange(FVector Location, double Radius);
 	AActor* ChoosePatrolTarget();
