@@ -581,4 +581,13 @@ void ASlashCharacter::ParryingSuccess(AActor* EnemyWeapon)
 void ASlashCharacter::BlockingSuccess(AActor* EnemyWeapon)
 {
 	PlayBlockAttackSound(EnemyWeapon->GetActorLocation());
+
+	LaunchBlockingCharacter();
+}
+
+void ASlashCharacter::LaunchBlockingCharacter()
+{
+	FVector LaunchDir = -1 * GetActorForwardVector();
+	FVector LaunchVelocity = 100 * LaunchDir;
+	LaunchCharacter(LaunchVelocity, false, false);
 }

@@ -134,6 +134,8 @@ private:
 	void ParryingSuccess(AActor* EnemyWeapon);		// 패링 성공했을 때, 실행되는 함수
 	void BlockingSuccess(AActor* EnemyWeapon);							// 막기 성공했을 때, 실행되는 함수
 
+	void LaunchBlockingCharacter();
+
 	/* Character components */
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* CameraBoom;
