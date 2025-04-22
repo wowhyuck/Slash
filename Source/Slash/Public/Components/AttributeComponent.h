@@ -20,15 +20,14 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-
-private:
 	// Current Health
-	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Actor Attributes")
 	float Health;
 
-	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Actor Attributes")
 	float MaxHealth;
 
+private:
 	// Current Stamina
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float Stamina;
@@ -38,9 +37,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float StartStaminaRegenTime = 3.f;
-
-	UPROPERTY(VisibleAnywhere, Category = "Actor Attributes")
-	int32 Gold;
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float DodgeCost = 10.f;
@@ -64,9 +60,8 @@ public:
 	float GetStaminaPercent();
 	bool IsAlive();
 	void AddHealth(float AmountOfRecovery);
-	void AddGold(int32 AmountOfGold);
 	FORCEINLINE float GetHealth() const { return Health; }
-	FORCEINLINE int32 GetGold() const { return Gold; }
+	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 	FORCEINLINE float GetDodgeCost() const { return DodgeCost; }
 	FORCEINLINE float GetStartBlockCost() const { return StartBlockCost; }
 	FORCEINLINE float GetBlockAttackCost() const { return BlockAttackCost; }

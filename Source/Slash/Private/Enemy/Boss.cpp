@@ -40,6 +40,7 @@ void ABoss::Die()
 {
 	ABaseCharacter::Die();
 	EnemyState = EEnemyState::EES_Dead;
+	bDead = true;
 	ClearAttackTimer();
 	DisableCapsule();
 	SetLifeSpan(DeathLifeSpan);
@@ -75,7 +76,6 @@ void ABoss::CheckCombatTarget()
 	}
 	else if (CanAttack())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Attack"));
 		StartAttackTimer();
 	}
 }

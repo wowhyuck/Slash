@@ -41,11 +41,16 @@ protected:
 
 	void ChaseTarget(float Speed);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat)
+	FName BossName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat)
+	bool bDead = false;
+
 
 private:
 	bool IsInsideWalkRadius();
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	double WalkRadius = 500.f;
-
 };

@@ -85,7 +85,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	AWeapon* EquippedWeapon;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UAttributeComponent* Attributes;
 
 	UPROPERTY(BlueprintReadOnly, Category = Combat)

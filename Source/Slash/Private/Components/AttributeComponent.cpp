@@ -47,11 +47,6 @@ void UAttributeComponent::AddHealth(float AmountOfRecovery)
 	Health = FMath::Clamp(Health + AmountOfRecovery, 0.f, MaxHealth);
 }
 
-void UAttributeComponent::AddGold(int32 AmountOfGold)
-{
-	Gold += AmountOfGold;
-}
-
 void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
