@@ -403,7 +403,6 @@ void AEnemy::SearchingLocation()
 
 void AEnemy::PawnSeen(APawn* SeenPawn)
 {
-	UE_LOG(LogTemp, Warning, TEXT("SeenPawn : %s"), *SeenPawn->GetName());
 	bSeeTarget = true;
 	GetWorldTimerManager().SetTimer(SeeTargetTimer, this, &AEnemy::NotSeeTarget, 0.5);
 

@@ -157,15 +157,6 @@ void ASlashCharacter::AddSouls(ASoul* Soul)
 	}
 }
 
-void ASlashCharacter::AddGold(ATreasure* Treasure)
-{
-	if (Attributes && SlashOverlay)
-	{
-		Attributes->AddGold(Treasure->GetGold());
-		SlashOverlay->SetGold(Attributes->GetGold());
-	}
-}
-
 void ASlashCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -499,7 +490,6 @@ void ASlashCharacter::InitializeSlashOverlay()
 			{
 				SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
 				SlashOverlay->SetStaminaBarPercent(1.f);
-				SlashOverlay->SetGold(0);
 			}
 		}
 	}

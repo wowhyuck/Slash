@@ -38,7 +38,6 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewAc
 	SetInstigator(NewInstigator);
 	AttachMeshToSocket(InParent, InSocketName);
 	DisableSphereCollision();
-	PlayEquipSound();
 	DeactivateEmbers();
 }
 
@@ -55,17 +54,6 @@ void AWeapon::DisableSphereCollision()
 	if (Sphere)
 	{
 		Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
-}
-
-void AWeapon::PlayEquipSound()
-{
-	if (EquipSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(
-			this,
-			EquipSound,
-			GetActorLocation());
 	}
 }
 
@@ -95,6 +83,10 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 		ExecuteGetHit(BoxHit);
 		CreateFields(BoxHit.ImpactPoint);
+
+		FString ActorName = BoxHit.GetActor()->GetName();
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ActorName);
+
 	}
 }
 

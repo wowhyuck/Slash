@@ -22,7 +22,6 @@ public:
 	void Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator);
 	void DeactivateEmbers();
 	void DisableSphereCollision();
-	void PlayEquipSound();
 	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
 
 	TArray<AActor*> IgnoreActors;
@@ -48,9 +47,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	bool bShowBoxDebug = false;
-
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
-	USoundBase* EquipSound;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	UBoxComponent* WeaponBox;

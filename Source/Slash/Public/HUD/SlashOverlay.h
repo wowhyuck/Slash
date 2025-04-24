@@ -18,7 +18,6 @@ public:
 
 	void SetHealthBarPercent(float Percent);
 	void SetStaminaBarPercent(float Percent);
-	void SetGold(int32 Gold);
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -26,7 +25,4 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* StaminaProgressBar;
-
-	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* GoldText;
 };

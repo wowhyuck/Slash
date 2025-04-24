@@ -21,13 +21,3 @@ void USlashOverlay::SetStaminaBarPercent(float Percent)
 		StaminaProgressBar->SetPercent(Percent);
 	}
 }
-
-void USlashOverlay::SetGold(int32 Gold)
-{
-	if (GoldText)
-	{
-		const FString String = FString::Printf(TEXT("%d"), Gold);
-		const FText Text = FText::FromString(String);
-		GoldText->SetText(Text);
-	}
-}
