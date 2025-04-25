@@ -29,27 +29,27 @@ protected:
 	virtual void BeginPlay() override;
 	/* </AActor> */
 
-	/* Combat */
+	/* ----- Combat ----- */
 	/* <IHitInterface> */
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 	/* </IHitInterface> */
 
 	virtual	void Attack();
+	virtual bool CanAttack();
 	virtual void Block();
 	virtual void Die();
-	void DirectionalHitReact(const FVector& ImpactPoint);	
 	virtual void HandleDamage(float DamageAmount);			// 받은 데미지를 Attribute의 Health에 적용하기
+	double GetThetaImpactPoint(const FVector& ImpactPoint);	// 캐릭터 ForwardVector 기준으로 ImpactPoint의 각도 구하기
+	void DirectionalHitReact(const FVector& ImpactPoint);
 	void PlayHitSound(const FVector& ImpactPoint);
 	void SpawnHitParticles(const FVector& ImpactPoint);
 	void DisableCapsule();
-	virtual bool CanAttack();
-	bool IsAlive();
 	void DisableMeshCollision();
-	double GetThetaImpactPoint(const FVector& ImpactPoint);	// 캐릭터 ForwardVector 기준으로 ImpactPoint의 각도 구하기
+	bool IsAlive();
 	bool IsFront(const FVector& ImpactPoint);
-	/* /Combat */
+	/* ----- /Combat ----- */
 
-	/* Montage */
+	/* ----- Montage ----- */
 	virtual int32 PlayAttackMontage();
 	virtual int32 PlayDeathMontage();
 	virtual void PlayBlockMontage();
@@ -62,7 +62,7 @@ protected:
 	void PlayParryingCounterMontage();
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
-	/* /Montage */
+	/* ----- /Montage ----- */
 
 	UFUNCTION(BlueprintCallable)
 	FVector GetTranslationWarpTarget();		// Motion Warp에서 캐릭터가 이동할 위치 구하기

@@ -20,13 +20,11 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
@@ -55,6 +53,11 @@ void ABaseCharacter::Attack()
 	}
 }
 
+bool ABaseCharacter::CanAttack()
+{
+	return false;
+}
+
 void ABaseCharacter::Block()
 {
 	
@@ -66,75 +69,13 @@ void ABaseCharacter::Die()
 	PlayDeathMontage();
 }
 
-void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint)
-{
-	double Theta = GetThetaImpactPoint(ImpactPoint);
-
-	FName Section("FromBack");
-	if (Theta < 45.f && Theta >= -45.f)
-	{
-		Section = FName("FromFront");
-	}
-	else if (Theta < -45.f && Theta >= -135.f)
-	{
-		Section = FName("FromLeft");
-	}
-	else if (Theta < 135.f && Theta >= 45.f)
-	{
-		Section = FName("FromRight");
-	}
-
-	PlayHitReactMontage(Section);
-}
-
 void ABaseCharacter::HandleDamage(float DamageAmount)
 {
+	// DamageAmount만큼 캐릭터 현재 체력에 적용
 	if (Attributes)
 	{
 		Attributes->ReceiveDamage(DamageAmount);
 	}
-}
-
-void ABaseCharacter::PlayHitSound(const FVector& ImpactPoint)
-{
-	if (HitSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(
-			this,
-			HitSound,
-			ImpactPoint);
-	}
-}
-
-void ABaseCharacter::SpawnHitParticles(const FVector& ImpactPoint)
-{
-	if (HitParticles && GetWorld())
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(
-			GetWorld(),
-			HitParticles,
-			ImpactPoint);
-	}
-}
-
-void ABaseCharacter::DisableCapsule()
-{
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-}
-
-bool ABaseCharacter::CanAttack()
-{
-	return false;
-}
-
-bool ABaseCharacter::IsAlive()
-{
-	return Attributes && Attributes->IsAlive();
-}
-
-void ABaseCharacter::DisableMeshCollision()
-{
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 double ABaseCharacter::GetThetaImpactPoint(const FVector& ImpactPoint)
@@ -165,6 +106,67 @@ double ABaseCharacter::GetThetaImpactPoint(const FVector& ImpactPoint)
 	}
 
 	return Theta;
+}
+
+void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint)
+{
+	double Theta = GetThetaImpactPoint(ImpactPoint);
+
+	// 피격 각도에 따라 HitReactMontaget SectionName 설정
+	FName Section("FromBack");
+	if (Theta < 45.f && Theta >= -45.f)
+	{
+		Section = FName("FromFront");
+	}
+	else if (Theta < -45.f && Theta >= -135.f)
+	{
+		Section = FName("FromLeft");
+	}
+	else if (Theta < 135.f && Theta >= 45.f)
+	{
+		Section = FName("FromRight");
+	}
+
+	PlayHitReactMontage(Section);
+}
+
+void ABaseCharacter::PlayHitSound(const FVector& ImpactPoint)
+{
+	// ImpactPoint에 HitSound 재생
+	if (HitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			HitSound,
+			ImpactPoint);
+	}
+}
+
+void ABaseCharacter::SpawnHitParticles(const FVector& ImpactPoint)
+{
+	// ImpactPoint에 HitParticles 생성
+	if (HitParticles && GetWorld())
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			HitParticles,
+			ImpactPoint);
+	}
+}
+
+void ABaseCharacter::DisableCapsule()
+{
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void ABaseCharacter::DisableMeshCollision()
+{
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+bool ABaseCharacter::IsAlive()
+{
+	return Attributes && Attributes->IsAlive();
 }
 
 bool ABaseCharacter::IsFront(const FVector& ImpactPoint)
@@ -263,6 +265,16 @@ void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& Sect
 	}
 }
 
+int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames)
+{
+	if (SectionNames.Num() <= 0) return -1;
+	const int32 MaxSectionIndex = SectionNames.Num() - 1;
+	const int32 Selection = FMath::RandRange(0, MaxSectionIndex);
+	PlayMontageSection(Montage, SectionNames[Selection]);
+
+	return Selection;
+}
+
 FVector ABaseCharacter::GetTranslationWarpTarget()
 {
 	if (CombatTarget == nullptr) return FVector();
@@ -307,15 +319,5 @@ void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collision
 void ABaseCharacter::SetMeshCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
 {
 	GetMesh()->SetCollisionEnabled(CollisionEnabled);
-}
-
-int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames)
-{
-	if (SectionNames.Num() <= 0) return -1;
-	const int32 MaxSectionIndex = SectionNames.Num() - 1;
-	const int32 Selection = FMath::RandRange(0, MaxSectionIndex);
-	PlayMontageSection(Montage, SectionNames[Selection]);
-
-	return Selection;
 }
 
