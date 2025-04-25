@@ -59,7 +59,6 @@ void ASlashCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdateSlashOverlay(DeltaTime);
-
 }
 
 float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -216,6 +215,15 @@ int32 ASlashCharacter::PlayAttackMontage()
 	return CurrentCombo;
 }
 
+void ASlashCharacter::Die()
+{
+	Super::Die();
+
+	ActionState = EActionState::EAS_Dead;
+	IsGameFinished = true;
+	DisableMeshCollision();
+}
+
 void ASlashCharacter::MoveForward(float Value)
 {
 	if (ActionState != EActionState::EAS_Unoccupied) return;
@@ -364,15 +372,6 @@ void ASlashCharacter::PlayEquipMontage(const FName& SectionName)
 	}
 }
 
-void ASlashCharacter::Die()
-{
-	Super::Die();
-
-	ActionState = EActionState::EAS_Dead;
-	IsGameFinished = true;
-	DisableMeshCollision();
-}
-
 bool ASlashCharacter::HasEnoughStamina(const float& Cost)
 {
 	return Attributes && (Attributes->GetStamina() > Cost);
@@ -407,12 +406,9 @@ void ASlashCharacter::PlayParrySound(const FVector& ImpactPoint)
 
 void ASlashCharacter::Counter()
 {
+	// true  -> 패링 성공 시 카운터 Montage 재생 
+	// false -> 막기 성공 시 카운터 Montage 재생
 	bCanParry ? PlayParryingCounterMontage() : PlayBlockingCounterMontage();
-}
-
-void ASlashCharacter::ParryEnd()
-{
-	bCanParry = false;
 }
 
 void ASlashCharacter::AttachWeaponToBack()
@@ -439,6 +435,11 @@ void ASlashCharacter::FinishEquipping()
 void ASlashCharacter::HitReactEnd()
 {
 	ActionState = EActionState::EAS_Unoccupied;
+}
+
+void ASlashCharacter::ParryEnd()
+{
+	bCanParry = false;
 }
 
 void ASlashCharacter::SetVariablesByAttribute()
@@ -572,6 +573,7 @@ void ASlashCharacter::BlockingSuccess(AActor* EnemyWeapon)
 {
 	PlayBlockAttackSound(EnemyWeapon->GetActorLocation());
 
+	// 적의 공격을 막았을 때, 캐릭터 뒤로 밀리기
 	LaunchBlockingCharacter();
 }
 

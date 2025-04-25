@@ -56,11 +56,12 @@ protected:
 	virtual void BeginPlay() override;
 	/* </AActor> */
 
-	/* Callbacks for input */
+	/* ----- Callbacks for input ----- */
 	/* <ABaseCharacter> */
 	virtual void Attack() override;
 	virtual void Block() override;
 	virtual int32 PlayAttackMontage() override;
+	virtual void Die() override;
 	/* </ABaseCharacter> */
 
 	void MoveForward(float Value);
@@ -70,7 +71,7 @@ protected:
 	void EKeyPressed();
 	void Dodge();
 	void BlockEnd();
-	/* /Callbacks for input */
+	/* ----- /Callbacks for input ----- */
 
 	/* Combat */
 	/* <ABaseCharacter> */
@@ -85,12 +86,11 @@ protected:
 	void Disarm();
 	void Arm();
 	void PlayEquipMontage(const FName& SectionName);
-	virtual void Die() override;
 	bool HasEnoughStamina(const float& Cost);
 	bool IsOccupied();
 	void PlayBlockAttackSound(const FVector& ImpactPoint);
 	void PlayParrySound(const FVector& ImpactPoint);
-	void Counter();		// Block 성공 후, Attack
+	void Counter();
 
 	UFUNCTION(BlueprintCallable)
 	void AttachWeaponToBack();
@@ -132,10 +132,9 @@ private:
 	void ResetCurrentCombo();		// ResetComboTimer가 끝날 때, CurrentCombo = 0으로 초기화
 	void ParryingSuccess(AActor* EnemyWeapon);		// 패링 성공했을 때, 실행되는 함수
 	void BlockingSuccess(AActor* EnemyWeapon);							// 막기 성공했을 때, 실행되는 함수
-
 	void LaunchBlockingCharacter();
 
-	/* Character components */
+	/* ----- Character components ----- */
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* CameraBoom;
 
@@ -147,7 +146,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Hair")
 	UGroomComponent* Eyebrows;
-	/* /Character components */
+	/* ----- /Character components ----- */
 
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem;
