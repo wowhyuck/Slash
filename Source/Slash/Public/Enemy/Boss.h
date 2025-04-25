@@ -19,7 +19,6 @@ public:
 
 	/* <AActor> */
 	virtual void Tick(float DeltaTime) override;
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	/* </AActor> */
 
 	/* <IHitInterface> */
@@ -27,17 +26,16 @@ public:
 	/* </IHitInterface> */
 
 protected:
-	/* <AActor> */
-	virtual void BeginPlay() override;
-	/* </AActor> */
 
 	/* <ABaseCharacter> */
 	virtual void Die() override;
 	virtual void HandleDamage(float DamageAmount) override;
 	/* </ABaseCharacter> */
 
+	/* <AEnemy> */
 	virtual void InitializeEnemy() override;
 	virtual void CheckCombatTarget() override;
+	/* </AEnemy> */
 
 	void ChaseTarget(float Speed);
 

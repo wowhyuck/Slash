@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Enemy/Boss.h"
@@ -14,26 +14,17 @@ ABoss::ABoss()
 void ABoss::Tick(float DeltaTime)
 {
 	if (IsDead()) return;
+
+	// 적이 플레이어를 Target으로 지정할 때
 	if (EnemyState > EEnemyState::EES_Searching)
 	{
 		CheckCombatTarget();
 	}
 }
 
-float ABoss::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
-{
-	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	return DamageAmount;
-}
-
 void ABoss::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
 	ABaseCharacter::GetHit_Implementation(ImpactPoint, Hitter);
-}
-
-void ABoss::BeginPlay()
-{
-	Super::BeginPlay();
 }
 
 void ABoss::Die()
@@ -58,22 +49,27 @@ void ABoss::InitializeEnemy()
 {
 	EnemyController = Cast<AAIController>(GetController());
 	SpawnDefaultWeapon();
+	Tags.Add(FName("Enemy"));
 }
 
 void ABoss::CheckCombatTarget()
 {
+	// 걷기 범위 밖일 때
 	if (!IsInsideWalkRadius())
 	{
-		ChaseTarget(ChasingSpeed);
+		ChaseTarget(ChasingSpeed);	// Boss 이동속도를 ChasingSpeed로 설정
 	}
+	// 걷기 범위 안 && 공격 범위 밖일 때
 	else if (IsInsideWalkRadius() && IsOutsideAttackRadius())
 	{
 		ClearAttackTimer();
+		// 교전 상태 아닐 때
 		if (!IsEngaged())
 		{
-			ChaseTarget(ChasingWalkSpeed);
+			ChaseTarget(ChasingWalkSpeed);	// Boss 이동속도를 ChasingWalkSpeed로 설정
 		}
 	}
+	// 공격 가능할 때
 	else if (CanAttack())
 	{
 		StartAttackTimer();

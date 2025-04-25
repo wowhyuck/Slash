@@ -46,7 +46,6 @@ protected:
 	virtual void InitializeEnemy();
 	virtual void CheckCombatTarget();
 
-
 	void SpawnSoul();
 	void SpawnDefaultWeapon();
 	bool IsDead();
@@ -57,11 +56,10 @@ protected:
 	bool IsAttacking();
 	bool IsChasing();
 	bool IsEngaged();
-	void ClearAttackTimer();
 	void StartAttackTimer();
+	void ClearAttackTimer();
 	bool InTargetRange(AActor* Target, double Radius);
 	void MoveToTarget(AActor* Target);
-
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
