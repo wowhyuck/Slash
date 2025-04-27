@@ -29,20 +29,11 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sine Parameters")
-	float Amplitude = 0.25f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine Parameters")
-	float TimeConstant = 5.f;
-
 	UFUNCTION(BlueprintCallable)
 	float TransformedSin();
 
 	UFUNCTION(BlueprintPure)
 	float TransformedCosin();
-
-	template<typename T>
-	T Avg(T First, T Second);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -56,7 +47,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* ItemMesh;
 
-	EItemState ItemState = EItemState::EIS_Hovering;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sine Parameters")
+	float Amplitude = 0.25f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine Parameters")
+	float TimeConstant = 5.f;
 
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* Sphere;
@@ -67,11 +62,12 @@ protected:
 	UPROPERTY(EditAnywhere)
 	USoundBase* PickupSound;
 
+	EItemState ItemState = EItemState::EIS_Hovering;
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float RunningTime;
 
 	UPROPERTY(EditAnywhere)
 	class UNiagaraSystem* PickupEffect;
-
 };

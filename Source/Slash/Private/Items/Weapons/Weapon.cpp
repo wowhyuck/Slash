@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Items/Weapons/Weapon.h"
@@ -24,19 +24,12 @@ AWeapon::AWeapon()
 	BoxTraceEnd->SetupAttachment(GetRootComponent());
 }
 
-void AWeapon::BeginPlay()
-{
-	Super::BeginPlay();
-
-	WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnBoxOverlap);
-}
-
 void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewActor, APawn* NewInstigator)
 {
 	ItemState = EItemState::EIS_Equipped;
 	SetOwner(NewActor);
 	SetInstigator(NewInstigator);
-	AttachMeshToSocket(InParent, InSocketName);
+	AttachMeshToSocket(InParent, InSocketName);		// InSocketName에 무기 부착
 	DisableSphereCollision();
 	DeactivateEmbers();
 }
@@ -63,8 +56,18 @@ void AWeapon::AttachMeshToSocket(USceneComponent* InParent, const FName& InSocke
 	ItemMesh->AttachToComponent(InParent, TransformRules, InSocketName);
 }
 
+void AWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+
+	WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnBoxOverlap);
+}
+
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	// 이 게임에서 SlashCharacter 타입을 가진 Actor는 1개이므로, OtherActor는 주로 "Enemy" 태그를 가진 Actor
+	// "Enemy" 태그를 가진 Actor는 Overlap 무시
+	// 무기 소유자인 "적"이 자신 무기에 Overlap되는 것 방지
 	if (ActorIsSameType(OtherActor)) return;
 
 	FHitResult BoxHit;
@@ -72,6 +75,8 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 	if (BoxHit.GetActor())
 	{
+		// "Enemy" 태그를 가진 Actor는 Overlap 무시
+		// "적"이 공격할 때 Box가 다른 "적"에 Overlap되는 것 방지
 		if (ActorIsSameType(BoxHit.GetActor())) return;
 
 		UGameplayStatics::ApplyDamage(
@@ -83,10 +88,6 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 		ExecuteGetHit(BoxHit);
 		CreateFields(BoxHit.ImpactPoint);
-
-		FString ActorName = BoxHit.GetActor()->GetName();
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *ActorName);
-
 	}
 }
 
@@ -110,9 +111,10 @@ void AWeapon::BoxTrace(FHitResult& BoxHit)
 	const FVector End = BoxTraceEnd->GetComponentLocation();
 
 	TArray<AActor*> ActorsToIgnore;
-	ActorsToIgnore.Add(this);
-	ActorsToIgnore.Add(GetOwner());
+	ActorsToIgnore.Add(this);		// Weapon 타입 무시
+	ActorsToIgnore.Add(GetOwner());	// Weapon을 장착한 Actor 타입 무시
 
+	// 블루프린트에서 지정한 IgnoreActors 추가
 	for (AActor* Actor : IgnoreActors)
 	{
 		ActorsToIgnore.AddUnique(Actor);
@@ -130,5 +132,7 @@ void AWeapon::BoxTrace(FHitResult& BoxHit)
 		bShowBoxDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None,
 		BoxHit,
 		true);
+
+	// 1번 공격에 1번 데미지 적용
 	IgnoreActors.AddUnique(BoxHit.GetActor());
 }

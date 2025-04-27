@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -19,7 +19,7 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Soul Properties")
-	float Recovery;
+	float Recovery;	// 체력 회복량
 
 public:
 	FORCEINLINE float GetRecovery() const { return Recovery; }

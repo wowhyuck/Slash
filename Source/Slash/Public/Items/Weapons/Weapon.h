@@ -33,7 +33,6 @@ protected:
 	void OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	bool ActorIsSameType(AActor* OtherActor);
-
 	void ExecuteGetHit(FHitResult& BoxHit);
 
 	UFUNCTION(BlueprintImplementableEvent)
@@ -51,14 +50,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	UBoxComponent* WeaponBox;
 
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	float Damage = 20.f;
+
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* BoxTraceStart;
 
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* BoxTraceEnd;
-
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
-	float Damage = 20.f;
 
 public:
 	FORCEINLINE UBoxComponent* GetWeaponBox() const { return WeaponBox; }
