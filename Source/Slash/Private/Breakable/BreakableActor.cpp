@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Breakable/BreakableActor.h"
@@ -24,16 +24,9 @@ ABreakableActor::ABreakableActor()
 	Capsule->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 }
 
-void ABreakableActor::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
 void ABreakableActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ABreakableActor::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
@@ -42,6 +35,8 @@ void ABreakableActor::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 	bBroken = true;
 
 	UWorld* World = GetWorld();
+
+	// 항아리가 깨진 후, 랜덤으로 보석을 생성
 	if (World && TreasureClaases.Num() > 0)
 	{
 		FVector Location = GetActorLocation();
@@ -57,6 +52,11 @@ void ABreakableActor::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 		BrokenSound,
 		ImpactPoint);
 
+	// 항아리가 깨졌을 때, Noise 전달해서 AIPerception->OnTargetPerceptionUpdated 부르기
 	UAISense_Hearing::ReportNoiseEvent(GetWorld(), GetActorLocation(), 1.f, this);
 }
 
+void ABreakableActor::BeginPlay()
+{
+	Super::BeginPlay();
+}
