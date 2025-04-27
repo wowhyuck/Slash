@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "HUD/SlashHUD.h"
@@ -12,6 +12,7 @@ void ASlashHUD::PreInitializeComponents()
 		APlayerController* Controller = World->GetFirstPlayerController();
 		if (Controller && SlashOverlayClass)
 		{
+			// 플레이어에게 SlashOverlay Widget 화면 띄우기
 			SlashOverlay = CreateWidget<USlashOverlay>(Controller, SlashOverlayClass);
 			SlashOverlay->AddToViewport();
 		}
@@ -21,5 +22,4 @@ void ASlashHUD::PreInitializeComponents()
 void ASlashHUD::BeginPlay()
 {
 	Super::BeginPlay();
-
 }

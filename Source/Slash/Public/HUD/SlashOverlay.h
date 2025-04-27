@@ -15,7 +15,6 @@ class SLASH_API USlashOverlay : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-
 	void SetHealthBarPercent(float Percent);
 	void SetStaminaBarPercent(float Percent);
 

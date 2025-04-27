@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "HUD/HealthBarComponent.h"
@@ -12,7 +12,7 @@ void UHealthBarComponent::SetHealthPercent(float Percent)
 		HealthBarWidget = Cast<UHealthBar>(GetUserWidgetObject());
 	}
 
-
+	// HealthBarWidget의 HealthBar(ProgressBar) 퍼센트 세팅
 	if (HealthBarWidget && HealthBarWidget->HealthBar)
 	{
 		HealthBarWidget->HealthBar->SetPercent(Percent);
