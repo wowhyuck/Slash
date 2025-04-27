@@ -36,22 +36,22 @@ private:
 	float MaxStamina;
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
-	float StartStaminaRegenTime = 3.f;
+	float StartStaminaRegenTime = 3.f;							// 스태미나 회복 시작할 때까지 걸리는 시간
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
-	float DodgeCost = 10.f;
+	float DodgeCost = 10.f;										// Dodge했을 때 비용
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float StartBlockCost = 5.f;									// Block 키를 눌렀을 때 비용
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
-	float BlockAttackCost = 10.f;
+	float BlockAttackCost = 10.f;								// Block 상태에서 공격을 막을 때 비용
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
-	float DefaultStaminaRegenRate = 5.f;
+	float DefaultStaminaRegenRate = 5.f;						// 기본 스태미나 회복율
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
-	float BlockingStaminaRegenRate = 1.f;
+	float BlockingStaminaRegenRate = 1.f;						// Block 상태 중 스태미나 회복율
 
 public:
 	void ReceiveDamage(float Damage);
@@ -69,5 +69,4 @@ public:
 	FORCEINLINE float GetStartStaminaRegenTime() const { return StartStaminaRegenTime; }
 	FORCEINLINE float GetDefaultStaminaRegenRate() const { return DefaultStaminaRegenRate; }
 	FORCEINLINE float GetBlockingStaminaRegenRate() const { return BlockingStaminaRegenRate; }
-	
 };

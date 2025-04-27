@@ -6,15 +6,21 @@
 UAttributeComponent::UAttributeComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
 }
 
+void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
+
+void UAttributeComponent::RegenStamina(float DeltaTime, float StaminaRegenRate)
+{
+	Stamina = FMath::Clamp(Stamina + StaminaRegenRate * DeltaTime, 0.f, MaxStamina);
+}
 
 void UAttributeComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
 }
 
 void UAttributeComponent::ReceiveDamage(float Damage)
@@ -45,15 +51,5 @@ bool UAttributeComponent::IsAlive()
 void UAttributeComponent::AddHealth(float AmountOfRecovery)
 {
 	Health = FMath::Clamp(Health + AmountOfRecovery, 0.f, MaxHealth);
-}
-
-void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-}
-
-void UAttributeComponent::RegenStamina(float DeltaTime, float StaminaRegenRate)
-{
-	Stamina = FMath::Clamp(Stamina + StaminaRegenRate * DeltaTime, 0.f, MaxStamina);
 }
 
