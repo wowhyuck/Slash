@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Characters/SlashAnimInstance.h"
@@ -22,6 +22,7 @@ void USlashAnimInstance::NativeUpdateAnimation(float DeltaTime)
 {
 	Super::NativeUpdateAnimation(DeltaTime);
 
+	// SlashCharacter와 SlashAnimInstance의 변수 일치
 	if (SlashCharacterMovement)
 	{
 		GroundSpeed = UKismetMathLibrary::VSizeXY(SlashCharacterMovement->Velocity);
@@ -33,7 +34,6 @@ void USlashAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	if (SlashCharacter)
 	{
-		//MovementOffsetYaw = UKismetMathLibrary::MakeRotFromX(SlashCharacter->GetVelocity()).Yaw;
 		FrontValue = SlashCharacter->FrontValue;
 		RightValue = SlashCharacter->RightValue;
 	}
