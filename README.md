@@ -43,6 +43,12 @@
       - Boss의 체력관련 Widget을 갖고 있는 WBP_BossHealthBar 사용
 
 - **전투 시스템**
+    - 공격 & 연속 공격
+    - 피격 방향에 따라 HitReact
+    - 막기(Blocking)
+    - 패링(Parrying)
+    - 반격
+    - 적의 시야, 소리 감지
 
 - **퀘스트 시스템**
 
