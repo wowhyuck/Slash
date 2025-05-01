@@ -180,10 +180,6 @@ void ASlashCharacter::Attack()
 		// True -> 반격
 		// False -> 일반 공격
 		bCanCounter ? Counter() : PlayAttackMontage();
-
-		// CurrentCombo == MaxCombo일 때, CurrentCombo를 0으로 초기화
-		// CurrentCombo != MaxCombo일 때, CurrentCombo에 1 더하기
-		CurrentCombo = (CurrentCombo == MaxCombo) ? 0 : FMath::Clamp(CurrentCombo + 1, 0, MaxCombo);
 	}
 }
 
@@ -313,6 +309,10 @@ void ASlashCharacter::AttackEnd()
 
 	// 공격이 끝나면, ResetComboTime까지 콤보 가능
 	SetResetComboTimer();
+	
+	// CurrentCombo == MaxCombo일 때, CurrentCombo를 0으로 초기화
+	// CurrentCombo != MaxCombo일 때, CurrentCombo에 1 더하기
+	CurrentCombo = (CurrentCombo == MaxCombo) ? 0 : FMath::Clamp(CurrentCombo + 1, 0, MaxCombo);
 }
 
 void ASlashCharacter::DodgeEnd()
