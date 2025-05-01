@@ -43,12 +43,28 @@
       - Boss의 체력관련 Widget을 갖고 있는 WBP_BossHealthBar 사용
 
 - **전투 시스템**
-    - 공격 & 연속 공격
-    - 피격 방향에 따라 HitReact
-    - 막기(Blocking)
-    - 패링(Parrying)
-    - 반격
-    - 적의 시야, 소리 감지
+1. 공격 & 연속 공격
+   - 구상
+       1. 공격: 무기와 Overlap될 때, ExecuteGetHit 함수 -> HitReact Montage 재생 / ApplyDamage 함수 -> 피격 캐릭터 Health 감소 
+       1. 연속 공격: 공격 후 타이머 시간 내에 공격을 하면, 다음 공격
+   - 공격
+   - 연속 공격
+     
+1. 피격 방향에 따라 HitReact
+    - 구상: 캐릭터 Forward Vector 기준으로 피격 지점 각도에 따라 HitReact Montage 재생
+    - 
+1. 막기(Blocking)
+    - 구상: Blocking 상태일 때 피격 각도에 따라 Blocking 성공 여부
+    - 
+1. 패링(Parrying)
+    - 구상: Blocking Animation 앞부분 패링 성공 Notify 두고 Notify 전후로 패링 성공 여부
+    - 
+1. 반격
+    - 구상: 막기/패링 성공 후 타이머 시간 내에 공격
+    - 
+1. 적의 시야, 소리 감지
+    - 구상: PawnSensingComponent / AIPerceptionComponent를 활용하여 적의 시야 / 소리 감지
+    - 
 
 - **퀘스트 시스템**
 
