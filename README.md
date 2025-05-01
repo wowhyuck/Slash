@@ -48,8 +48,37 @@
        1. 공격: 무기와 Overlap될 때, ExecuteGetHit 함수 -> HitReact Montage 재생 / ApplyDamage 함수 -> 피격 캐릭터 Health 감소 
        1. 연속 공격: 공격 후 타이머 시간 내에 공격을 하면, 다음 공격
    - 공격
+
+   ```cpp
+    // Weapon.cpp
+    void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+    {
+        ...
+    
+    	if (BoxHit.GetActor())
+    	{
+                ...
+    
+                // ApplyDamage 실행 시, 피격 캐릭터는 TakeDamage 호출해서 Damage를 Health에 적용
+                UGameplayStatics::ApplyDamage(
+                    BoxHit.GetActor(),
+                    Damage,
+                    GetInstigator()->GetController(),
+                    this,
+                    UDamageType::StaticClass());
+    
+                // ExecuteGetHit 실핼 시, 피격 캐릭터는 GetHit_Implementation 호출해서 HitReact Montage 재생
+                ExecuteGetHit(BoxHit);
+    
+                ...
+    	}
+    }
+    ```
+
    - 연속 공격
-     
+    ```cpp
+
+    ```
 1. 피격 방향에 따라 HitReact
     - 구상: 캐릭터 Forward Vector 기준으로 피격 지점 각도에 따라 HitReact Montage 재생
     - 
