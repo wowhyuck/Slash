@@ -15,6 +15,8 @@
 
     기본적으로 캐릭터와 아이템을 구현했으며, 추가로 액션RPG 요소인 전투 시스템과 퀘스트 시스템을 넣었습니다.
 
+    아래 설명은 캐릭터 설계와 전투 시스템입니다.
+
 - **게임 플레이 영상**
 
   /* 게임 영상 링크 넣기 */
@@ -77,7 +79,27 @@
 
    - 연속 공격
     ```cpp
-
+    // SlashCharacter.cpp
+    int32 ASlashCharacter::PlayAttackMontage()
+    {
+        // AttackMontageSections의 CurrentCombo번째 AttackMontage 재생
+        PlayMontageSection(AttackMontage, AttackMontageSections[CurrentCombo]);
+        return CurrentCombo;
+    }
+    ```
+    ```cpp
+    // SlashCharacter.cpp
+    void ASlashCharacter::AttackEnd()
+    {
+        ActionState = EActionState::EAS_Unoccupied;
+    
+        // 공격이 끝나면, ResetComboTime까지 콤보 가능
+        SetResetComboTimer();
+    	
+        // CurrentCombo == MaxCombo일 때, CurrentCombo를 0으로 초기화
+        // CurrentCombo != MaxCombo일 때, CurrentCombo에 1 더하기
+        CurrentCombo = (CurrentCombo == MaxCombo) ? 0 : FMath::Clamp(CurrentCombo + 1, 0, MaxCombo);
+    }
     ```
 1. 피격 방향에 따라 HitReact
     - 구상: 캐릭터 Forward Vector 기준으로 피격 지점 각도에 따라 HitReact Montage 재생
@@ -94,8 +116,76 @@
 1. 적의 시야, 소리 감지
     - 구상: PawnSensingComponent / AIPerceptionComponent를 활용하여 적의 시야 / 소리 감지
     - 
+1. 모션워핑      1. 연속 공격: 공격 후 타이머 시간 내에 공격을 하면, 다음 공격
+   - 공격
 
-- **퀘스트 시스템**
+   ```cpp
+    // Weapon.cpp
+    void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+    {
+        ...
+    
+    	if (BoxHit.GetActor())
+    	{
+                ...
+    
+                // ApplyDamage 실행 시, 피격 캐릭터는 TakeDamage 호출해서 Damage를 Health에 적용
+                UGameplayStatics::ApplyDamage(
+                    BoxHit.GetActor(),
+                    Damage,
+                    GetInstigator()->GetController(),
+                    this,
+                    UDamageType::StaticClass());
+    
+                // ExecuteGetHit 실핼 시, 피격 캐릭터는 GetHit_Implementation 호출해서 HitReact Montage 재생
+                ExecuteGetHit(BoxHit);
+    
+                ...
+    	}
+    }
+    ```
 
+   - 연속 공격
+    ```cpp
+    // SlashCharacter.cpp
+    int32 ASlashCharacter::PlayAttackMontage()
+    {
+        // AttackMontageSections의 CurrentCombo번째 AttackMontage 재생
+        PlayMontageSection(AttackMontage, AttackMontageSections[CurrentCombo]);
+        return CurrentCombo;
+    }
+    ```
+    ```cpp
+    // SlashCharacter.cpp
+    void ASlashCharacter::AttackEnd()
+    {
+        ActionState = EActionState::EAS_Unoccupied;
+    
+        // 공격이 끝나면, ResetComboTime까지 콤보 가능
+        SetResetComboTimer();
+    	
+        // CurrentCombo == MaxCombo일 때, CurrentCombo를 0으로 초기화
+        // CurrentCombo != MaxCombo일 때, CurrentCombo에 1 더하기
+        CurrentCombo = (CurrentCombo == MaxCombo) ? 0 : FMath::Clamp(CurrentCombo + 1, 0, MaxCombo);
+    }
+    ```
+1. 피격 방향에 따라 HitReact
+    - 구상: 캐릭터 Forward Vector 기준으로 피격 지점 각도에 따라 HitReact Montage 재생
+    - 
+1. 막기(Blocking)
+    - 구상: Blocking 상태일 때 피격 각도에 따라 Blocking 성공 여부
+    - 
+1. 패링(Parrying)
+    - 구상: Blocking Animation 앞부분 패링 성공 Notify 두고 Notify 전후로 패링 성공 여부
+    - 
+1. 반격
+    - 구상: 막기/패링 성공 후 타이머 시간 내에 공격
+    - 
+1. 적의 시야, 소리 감지
+    - 구상: PawnSensingComponent / AIPerceptionComponent를 활용하여 적의 시야 / 소리 감지
+    - 
+1. 적의 공격 모션 워핑(Motion Warping)
+    - 구상: 적의 Attack Animation 중 무기의 Collision이 활성화 되기 전에 플레이어를 바라보는 Motion Warping 넣기
+    - 
 
 ## 마무리
