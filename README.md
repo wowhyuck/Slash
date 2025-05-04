@@ -103,10 +103,89 @@
     ```
 1. 피격 방향에 따라 HitReact
     - 구상: 캐릭터 Forward Vector 기준으로 피격 지점 각도에 따라 HitReact Montage 재생
-    - 
+    ```cpp
+    // BaseCharacter.cpp
+    FVector ABaseCharacter::GetTranslationWarpTarget()
+    {
+        if (CombatTarget == nullptr) return FVector();
+	
+        const FVector CombatTargetLocation = CombatTarget->GetActorLocation();
+        const FVector Location = GetActorLocation();
+
+        // CombatTarget->캐릭터 방향의 거리
+        FVector TargetToMe = (Location - CombatTargetLocation).GetSafeNormal();
+        TargetToMe *= WarpTargetDistance;
+
+        return CombatTargetLocation + TargetToMe;
+    }
+    ```
+    ```cpp
+    // BaseCharacter.cpp
+    void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint)
+    {
+        double Theta = GetThetaImpactPoint(ImpactPoint);
+    
+        // 피격 각도에 따라 HitReactMontaget SectionName 설정
+        FName Section("FromBack");
+        if (Theta < 45.f && Theta >= -45.f)
+        {
+        	Section = FName("FromFront");
+        }
+        else if (Theta < -45.f && Theta >= -135.f)
+        {
+        	Section = FName("FromLeft");
+        }
+        else if (Theta < 135.f && Theta >= 45.f)
+        {
+        	Section = FName("FromRight");
+        }
+    
+        PlayHitReactMontage(Section);
+    }
+    ```
+
 1. 막기(Blocking)
     - 구상: Blocking 상태일 때 피격 각도에 따라 Blocking 성공 여부
-    - 
+    ```cpp
+    // BaseCharacter.cpp
+    bool ABaseCharacter::IsFront(const FVector& ImpactPoint)
+    {
+        double Theta = GetThetaImpactPoint(ImpactPoint);
+
+        // ImpactPoint 위치가 캐릭터 앞 -> true
+        if (Theta < 105.f && Theta >= -105.f)
+    {
+        return true;
+    }
+
+        // ImpactPoint 위치가 캐릭터 뒤 -> false
+        return false;
+    }
+    ```
+    ```cpp
+    // SlashCharacter.cpp
+    float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+    {
+        // 적의 공격을 받을 때, 적의 무기가 캐릭터 앞에 있을 때 && 캐릭터가 막기 중일 때 -> 막기 성공
+        bBlockAttack = IsFront(DamageCauser->GetActorLocation()) && ActionState == EActionState::EAS_Blocking;
+	
+	    // 공격 막기 성공했을 경우 -> Weapon Location = ImpactPoint 해서 bBlockAttack = true로 만들기
+        if (bBlockAttack)
+        {
+            ...
+
+            // True -> 적의 공격을 패링했을 때, 패링 관련 함수 실행
+            // False -> 적의 공격을 막았을 때, 막기 관련 함수 실행
+            bCanParry ? ParryingSuccess(DamageCauser) : BlockingSuccess(DamageCauser);
+
+            // 막았을 때 DamageBlocked(현재 데미지 없음) 적용
+            HandleDamage(DamageBlocked);
+
+            ...
+        }
+    }
+
+    ```
 1. 패링(Parrying)
     - 구상: Blocking Animation 앞부분 패링 성공 Notify 두고 Notify 전후로 패링 성공 여부
     - 
