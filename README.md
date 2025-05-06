@@ -323,6 +323,36 @@
       ```
 1. 적의 공격 모션 워핑(Motion Warping)
     - 구상: 적의 Attack Animation 중 무기의 Collision이 활성화 되기 전에 플레이어를 바라보는 Motion Warping 넣기
-    - 
+      ```cpp
+      // BaseCharacter.cpp
+      FVector ABaseCharacter::GetTranslationWarpTarget()
+      {
+          if (CombatTarget == nullptr) return FVector();
+
+          const FVector CombatTargetLocation = CombatTarget->GetActorLocation();
+          const FVector Location = GetActorLocation();
+
+          // CombatTarget->캐릭터 방향의 거리
+          FVector TargetToMe = (Location - CombatTargetLocation).GetSafeNormal();
+          TargetToMe *= WarpTargetDistance;
+
+          // 블루프린트에서 Add or Update Warp Target from Location 함수의 Target Location 값을 넣기 위해 
+          return CombatTargetLocation + TargetToMe;
+      }
+      ```
+
+      ```cpp
+      // BaseCharacter.cpp
+      FVector ABaseCharacter::GetRotationWarpTarget()
+      {
+          if (CombatTarget)
+          {
+              // 블루프린트에서 Add or Update Warp Target from Location 함수의 Target Location 값을 넣기 위해
+              return CombatTarget->GetActorLocation();
+          }
+
+          return FVector();
+      }
+      ```
 
 ## 마무리
