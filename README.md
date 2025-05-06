@@ -50,145 +50,164 @@
        1. 공격: 무기와 Overlap될 때, ExecuteGetHit 함수 -> HitReact Montage 재생 / ApplyDamage 함수 -> 피격 캐릭터 Health 감소 
        1. 연속 공격: 공격 후 타이머 시간 내에 공격을 하면, 다음 공격
    - 공격
+     ```cpp
+     // Weapon.cpp
+     void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+     {
+         ...
 
-   ```cpp
-    // Weapon.cpp
-    void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-    {
-        ...
-    
-    	if (BoxHit.GetActor())
-    	{
-                ...
-    
-                // ApplyDamage 실행 시, 피격 캐릭터는 TakeDamage 호출해서 Damage를 Health에 적용
-                UGameplayStatics::ApplyDamage(
-                    BoxHit.GetActor(),
-                    Damage,
-                    GetInstigator()->GetController(),
-                    this,
-                    UDamageType::StaticClass());
-    
-                // ExecuteGetHit 실핼 시, 피격 캐릭터는 GetHit_Implementation 호출해서 HitReact Montage 재생
-                ExecuteGetHit(BoxHit);
-    
-                ...
-    	}
-    }
-    ```
+         if (BoxHit.GetActor())
+         {
+             ...
+
+             // ApplyDamage 실행 시, 피격 캐릭터는 TakeDamage 호출해서 Damage를 Health에 적용
+             UGameplayStatics::ApplyDamage(
+                 BoxHit.GetActor(),
+                 Damage,
+                 GetInstigator()->GetController(),
+                 this,
+                 UDamageType::StaticClass());
+
+             // ExecuteGetHit 실핼 시, 피격 캐릭터는 GetHit_Implementation 호출해서 HitReact Montage 재생
+             ExecuteGetHit(BoxHit);
+
+             ...
+         }
+     }
+     ```
 
    - 연속 공격
-    ```cpp
-    // SlashCharacter.cpp
-    int32 ASlashCharacter::PlayAttackMontage()
-    {
-        // AttackMontageSections의 CurrentCombo번째 AttackMontage 재생
-        PlayMontageSection(AttackMontage, AttackMontageSections[CurrentCombo]);
-        return CurrentCombo;
-    }
-    ```
-    ```cpp
-    // SlashCharacter.cpp
-    void ASlashCharacter::AttackEnd()
-    {
-        ActionState = EActionState::EAS_Unoccupied;
-    
-        // 공격이 끝나면, ResetComboTime까지 콤보 가능
-        SetResetComboTimer();
-    	
-        // CurrentCombo == MaxCombo일 때, CurrentCombo를 0으로 초기화
-        // CurrentCombo != MaxCombo일 때, CurrentCombo에 1 더하기
-        CurrentCombo = (CurrentCombo == MaxCombo) ? 0 : FMath::Clamp(CurrentCombo + 1, 0, MaxCombo);
-    }
-    ```
+     ```cpp
+     // SlashCharacter.cpp
+     int32 ASlashCharacter::PlayAttackMontage()
+     {
+         // AttackMontageSections의 CurrentCombo번째 AttackMontage 재생
+         PlayMontageSection(AttackMontage, AttackMontageSections[CurrentCombo]);
+         return CurrentCombo;
+     }
+     ```
+     ```cpp
+     // SlashCharacter.cpp
+     void ASlashCharacter::AttackEnd()
+     {
+         ActionState = EActionState::EAS_Unoccupied;
+
+         // 공격이 끝나면, ResetComboTime까지 콤보 가능
+         SetResetComboTimer();
+
+         // CurrentCombo == MaxCombo일 때, CurrentCombo를 0으로 초기화
+         // CurrentCombo != MaxCombo일 때, CurrentCombo에 1 더하기
+         CurrentCombo = (CurrentCombo == MaxCombo) ? 0 : FMath::Clamp(CurrentCombo + 1, 0, MaxCombo);
+     }
+     ```
 1. 피격 방향에 따라 HitReact
     - 구상: 캐릭터 Forward Vector 기준으로 피격 지점 각도에 따라 HitReact Montage 재생
-    ```cpp
-    // BaseCharacter.cpp
-    FVector ABaseCharacter::GetTranslationWarpTarget()
-    {
-        if (CombatTarget == nullptr) return FVector();
-	
-        const FVector CombatTargetLocation = CombatTarget->GetActorLocation();
-        const FVector Location = GetActorLocation();
+      ```cpp
+      // BaseCharacter.cpp
+      FVector ABaseCharacter::GetTranslationWarpTarget()
+      {
+          if (CombatTarget == nullptr) return FVector();
 
-        // CombatTarget->캐릭터 방향의 거리
-        FVector TargetToMe = (Location - CombatTargetLocation).GetSafeNormal();
-        TargetToMe *= WarpTargetDistance;
+          const FVector CombatTargetLocation = CombatTarget->GetActorLocation();
+          const FVector Location = GetActorLocation();
 
-        return CombatTargetLocation + TargetToMe;
-    }
-    ```
-    ```cpp
-    // BaseCharacter.cpp
-    void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint)
-    {
-        double Theta = GetThetaImpactPoint(ImpactPoint);
-    
-        // 피격 각도에 따라 HitReactMontaget SectionName 설정
-        FName Section("FromBack");
-        if (Theta < 45.f && Theta >= -45.f)
-        {
-        	Section = FName("FromFront");
-        }
-        else if (Theta < -45.f && Theta >= -135.f)
-        {
-        	Section = FName("FromLeft");
-        }
-        else if (Theta < 135.f && Theta >= 45.f)
-        {
-        	Section = FName("FromRight");
-        }
-    
-        PlayHitReactMontage(Section);
-    }
-    ```
+          // CombatTarget->캐릭터 방향의 거리
+          FVector TargetToMe = (Location - CombatTargetLocation).GetSafeNormal();
+          TargetToMe *= WarpTargetDistance;
+
+          return CombatTargetLocation + TargetToMe;
+      }
+      ```
+      ```cpp
+      // BaseCharacter.cpp
+      void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint)
+      {
+          double Theta = GetThetaImpactPoint(ImpactPoint);
+
+          // 피격 각도에 따라 HitReactMontaget SectionName 설정
+          FName Section("FromBack");
+          if (Theta < 45.f && Theta >= -45.f)
+          {
+              Section = FName("FromFront");
+          }
+          else if (Theta < -45.f && Theta >= -135.f)
+          {
+              Section = FName("FromLeft");
+          }
+          else if (Theta < 135.f && Theta >= 45.f)
+          {
+              Section = FName("FromRight");
+          }
+
+          PlayHitReactMontage(Section);
+      }
+      ```
 
 1. 막기(Blocking)
     - 구상: Blocking 상태일 때 피격 각도에 따라 Blocking 성공 여부
-    ```cpp
-    // BaseCharacter.cpp
-    bool ABaseCharacter::IsFront(const FVector& ImpactPoint)
-    {
-        double Theta = GetThetaImpactPoint(ImpactPoint);
+      ```cpp
+      // BaseCharacter.cpp
+      bool ABaseCharacter::IsFront(const FVector& ImpactPoint)
+      {
+          double Theta = GetThetaImpactPoint(ImpactPoint);
 
-        // ImpactPoint 위치가 캐릭터 앞 -> true
-        if (Theta < 105.f && Theta >= -105.f)
-    {
-        return true;
-    }
+          // ImpactPoint 위치가 캐릭터 앞 -> true
+          if (Theta < 105.f && Theta >= -105.f)
+          {
+              return true;
+          }
 
-        // ImpactPoint 위치가 캐릭터 뒤 -> false
-        return false;
-    }
-    ```
-    ```cpp
-    // SlashCharacter.cpp
-    float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-    {
-        // 적의 공격을 받을 때, 적의 무기가 캐릭터 앞에 있을 때 && 캐릭터가 막기 중일 때 -> 막기 성공
-        bBlockAttack = IsFront(DamageCauser->GetActorLocation()) && ActionState == EActionState::EAS_Blocking;
-	
-	    // 공격 막기 성공했을 경우 -> Weapon Location = ImpactPoint 해서 bBlockAttack = true로 만들기
-        if (bBlockAttack)
-        {
-            ...
+          // ImpactPoint 위치가 캐릭터 뒤 -> false
+          return false;
+      }
+      ```
+      ```cpp
+      // SlashCharacter.cpp
+      float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+      {
+          // 적의 공격을 받을 때, 적의 무기가 캐릭터 앞에 있을 때 && 캐릭터가 막기 중일 때 -> 막기 성공
+          bBlockAttack = IsFront(DamageCauser->GetActorLocation()) && ActionState == EActionState::EAS_Blocking;
 
-            // True -> 적의 공격을 패링했을 때, 패링 관련 함수 실행
-            // False -> 적의 공격을 막았을 때, 막기 관련 함수 실행
-            bCanParry ? ParryingSuccess(DamageCauser) : BlockingSuccess(DamageCauser);
+          // 공격 막기 성공했을 경우 -> Weapon Location = ImpactPoint 해서 bBlockAttack = true로 만들기
+          if (bBlockAttack)
+          {
+              ...
 
-            // 막았을 때 DamageBlocked(현재 데미지 없음) 적용
-            HandleDamage(DamageBlocked);
+              // True -> 적의 공격을 패링했을 때, 패링 관련 함수 실행
+              // False -> 적의 공격을 막았을 때, 막기 관련 함수 실행
+              bCanParry ? ParryingSuccess(DamageCauser) : BlockingSuccess(DamageCauser);
 
-            ...
-        }
-    }
+              // 막았을 때 DamageBlocked(현재 데미지 없음) 적용
+              HandleDamage(DamageBlocked);
 
-    ```
+              ...
+          }
+      }
+      ```
+
 1. 패링(Parrying)
     - 구상: Blocking Animation 앞부분 패링 성공 Notify 두고 Notify 전후로 패링 성공 여부
-    - 
+      ```cpp
+      // SlashCharacter.cpp
+      void ASlashCharacter::Block()
+      {
+          if (IsOccupied() || IsFalling() || !HasEnoughStamina(StartBlockCost) || CharacterState == ECharacterState::ECS_Unequipped) return;
+
+          // 막기 시작했을 때 bCanParry = true 설정
+          bCanParry = true;
+
+          ...
+      }
+      ```
+
+      ```cpp
+      // SlashCharacter.cpp
+      void ASlashCharacter::ParryEnd()
+      {
+          // ParryEnd Notify가 호출될 때 bCanParry = false 설정
+          bCanParry = false;
+      }
+      ```
 1. 반격
     - 구상: 막기/패링 성공 후 타이머 시간 내에 공격
     - 
