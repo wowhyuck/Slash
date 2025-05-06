@@ -246,7 +246,81 @@
       ```
 1. 적의 시야, 소리 감지
     - 구상: PawnSensingComponent / AIPerceptionComponent를 활용하여 적의 시야 / 소리 감지
-    - 
+      ```cpp
+      // Enemy.cpp
+      AEnemy::AEnemy()
+      {
+          ...
+
+          // PawnSensing Component(시야 감지) 생성 및 초기화
+          PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
+          PawnSensing->SightRadius = 4000.f;
+          PawnSensing->SetPeripheralVisionAngle(45.f);
+
+          // AIPerception Component(소리 감지) 생성 및 초기화
+          AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
+          HearingConfig = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("HearingConfig"));
+          AIPerception->ConfigureSense(*HearingConfig);
+      }
+      ```
+
+      ```cpp
+      // Enemy.cpp
+      void AEnemy::BeginPlay()
+      {
+          ...
+
+          // 시야, 소리 감지할 때 호출할 함수 등록
+          // PawnSensing->OnSeePawn / AIPerception->OnTargetPerceptionUpdated
+          if (PawnSensing)
+          {
+              PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
+          }
+          if (AIPerception)
+          {
+              AIPerception->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemy::SenseNoise);
+          }
+      }
+      ```
+
+      ```cpp
+      // Enemy.cpp
+      void AEnemy::PawnSeen(APawn* SeenPawn)
+      {
+          bSeeTarget = true;	// Pawn 볼 때, true로 설정
+
+          // SeenPawn이 적의 시야각 범위 밖에 있으면 bSeeTarget = false로 초기화
+          GetWorldTimerManager().SetTimer(SeeTargetTimer, this, &AEnemy::NotSeeTarget, 0.5);
+
+          // 감지된 Pawn이 플레이어고 Enemy가 공격 시작할 수 있는지
+          const bool bShouldChaseTarget =
+              EnemyState != EEnemyState::EES_Dead &&
+              EnemyState != EEnemyState::EES_Chasing &&
+              EnemyState < EEnemyState::EES_Attacking&&
+              SeenPawn->ActorHasTag(FName("EngageableTarget"));
+
+          // 적이 공격 가능하면 Patrol 중지하고,
+          // SeenPawn을 CobatTarget으로 세팅하고 추격하기
+          if (bShouldChaseTarget)
+          {
+              CombatTarget = SeenPawn;
+              ClearPatrolTimer();
+              ChaseTarget();
+          }
+      }
+      ```
+
+      ```cpp
+      // Enemy.cpp
+      void AEnemy::SenseNoise(AActor* NoiseActor, FAIStimulus Stimulus)
+      {
+          ...
+
+          // 소리 감지 시, 소리나는 지점으로 정찰
+          EnemyState = EEnemyState::EES_Searching;
+          LocationSearched = NoiseActor->GetActorLocation();
+      }
+      ```
 1. 적의 공격 모션 워핑(Motion Warping)
     - 구상: 적의 Attack Animation 중 무기의 Collision이 활성화 되기 전에 플레이어를 바라보는 Motion Warping 넣기
     - 
