@@ -208,9 +208,42 @@
           bCanParry = false;
       }
       ```
+
+      ```cpp
+      // SlashCharacter.cpp
+      void ASlashCharacter::ParryingSuccess(AActor* EnemyWeapon)
+      {
+          ...
+      
+          // 적이 패링 당했을 때 Attack Animation 중지시키기
+          IHitInterface* HitInterface = Cast<IHitInterface>(EnemyWeapon->GetOwner());
+          if (HitInterface)
+          {
+              HitInterface->Execute_GetHit(EnemyWeapon->GetOwner(), EnemyWeapon->GetActorLocation(), this);
+          }
+      }
+      ```
 1. 반격
     - 구상: 막기/패링 성공 후 타이머 시간 내에 공격
-    - 
+      ```cpp
+      // SlashCharacter.cpp
+      float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+      {
+          ...
+
+          // 적의 공격을 막기 성공했을 경우
+          if (bBlockAttack)
+          {
+              // 반격 가능 여부 변수인 bCanCounter = true 설정
+              // CanCounterTimer 지나면 bCanCounter = false 설정
+              bCanCounter = true;
+              SetCanCounterTimer();
+          }
+      
+          ...
+
+      }
+      ```
 1. 적의 시야, 소리 감지
     - 구상: PawnSensingComponent / AIPerceptionComponent를 활용하여 적의 시야 / 소리 감지
     - 
