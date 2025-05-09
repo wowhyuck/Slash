@@ -75,8 +75,13 @@
          }
      }
      ```
+     - 결과
+     -  /* 공격 영상 */
 
    - 연속 공격
+     - AttackMontageSections 배열에 AttackMontage SectionName 등록
+     - 캐릭터 생성될 때 CurrentCombo = 0 초기화
+     - /* 이미지 */
      ```cpp
      // SlashCharacter.cpp
      int32 ASlashCharacter::PlayAttackMontage()
@@ -86,6 +91,10 @@
          return CurrentCombo;
      }
      ```
+     - Attack Animation 끝날 때(AttackEnd), ResetComboTimer 작동
+       - ResetComboTime 안에 공격: CurrentCombo + 1 -> 다음 Section Attack Animation 재생
+       - ResetcomboTime 뒤에 공격 || CurrentCombo가 마지막 공격: CurrentCombo = 0 -> AttackMontageSections[0] Animation 재생
+       - /* 이미지 */
      ```cpp
      // SlashCharacter.cpp
      void ASlashCharacter::AttackEnd()
@@ -100,24 +109,45 @@
          CurrentCombo = (CurrentCombo == MaxCombo) ? 0 : FMath::Clamp(CurrentCombo + 1, 0, MaxCombo);
      }
      ```
+     - 결과
+     -  /* 공격 영상 */
 1. 피격 방향에 따라 HitReact
-    - 구상: 캐릭터 Forward Vector 기준으로 피격 지점 각도에 따라 HitReact Montage 재생
+    - 구상: 캐릭터 Forward Vector 기준으로 ImpactPoint 지점 각도에 따라 HitReact Montage 재생
+      - 캐릭터 Forward Vector와 캐릭터->ImpactPoint Vector와의 각도(Theata) 구하기
+      - /* 이미지 */
       ```cpp
       // BaseCharacter.cpp
-      FVector ABaseCharacter::GetTranslationWarpTarget()
+      double ABaseCharacter::GetThetaImpactPoint(const FVector& ImpactPoint)
       {
-          if (CombatTarget == nullptr) return FVector();
+          const FVector Forward = GetActorForwardVector();
 
-          const FVector CombatTargetLocation = CombatTarget->GetActorLocation();
-          const FVector Location = GetActorLocation();
+          // ImpactPoint와 캐릭터 Location.Z 일치
+          // 캐릭터->ImpactPoint의 유닛벡터 구하기
+          const FVector ImpactLowered(ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z);
+          const FVector ToHit = (ImpactLowered - GetActorLocation()).GetSafeNormal();
 
-          // CombatTarget->캐릭터 방향의 거리
-          FVector TargetToMe = (Location - CombatTargetLocation).GetSafeNormal();
-          TargetToMe *= WarpTargetDistance;
+          // Forward * ToHit = |Forward||ToHit| * cos(theta)
+          // |Forward| = 1, |ToHit| = 1 -> Forward * ToHit = cos(theta)
+          const double CosTheta = FVector::DotProduct(Forward, ToHit);
 
-          return CombatTargetLocation + TargetToMe;
+          // Theta 구하기
+          // theta = acos(cos(theta))
+          double Theta = FMath::Acos(CosTheta);
+
+          // Radian을 degree로 변환
+          Theta = FMath::RadiansToDegrees(Theta);
+
+          // CrossProduct.Z가 -일 경우, ImpactPoint가 캐릭터 왼쪽 위치 (언리얼에서 외적은 왼손법칙)
+          const FVector CrossProduct = FVector::CrossProduct(Forward, ToHit);
+          if (CrossProduct.Z < 0)
+          {
+              Theta *= -1.f;
+          }
+
+          return Theta;
       }
       ```
+   - Theta에 따라 HitReactMontage SectionName 설정 및 재생
       ```cpp
       // BaseCharacter.cpp
       void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint)
@@ -142,9 +172,13 @@
           PlayHitReactMontage(Section);
       }
       ```
+      - 결과
+      - /* 영상 */
 
 1. 막기(Blocking)
     - 구상: Blocking 상태일 때 피격 각도에 따라 Blocking 성공 여부
+      - 막기 가능(-105 ~ 105) 범위 설정
+      - /* 이미지 */
       ```cpp
       // BaseCharacter.cpp
       bool ABaseCharacter::IsFront(const FVector& ImpactPoint)
@@ -161,6 +195,7 @@
           return false;
       }
       ```
+      - 캐릭터가 막기 중 && 적의 공격 위치가 막기 범위 안 -> 막기 성공   
       ```cpp
       // SlashCharacter.cpp
       float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -187,6 +222,10 @@
 
 1. 패링(Parrying)
     - 구상: Blocking Animation 앞부분 패링 성공 Notify 두고 Notify 전후로 패링 성공 여부
+      - ParryEnd Notify 기준
+        - ParryEnd 전 막기 성공 -> 패링
+        - ParryEnd 후 막기 성공 -> 기본 막기
+      - /* 이미지 */
       ```cpp
       // SlashCharacter.cpp
       void ASlashCharacter::Block()
@@ -208,7 +247,7 @@
           bCanParry = false;
       }
       ```
-
+      - 패링 성공했을 때 적의 Attack Animation 중지
       ```cpp
       // SlashCharacter.cpp
       void ASlashCharacter::ParryingSuccess(AActor* EnemyWeapon)
