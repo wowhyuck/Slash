@@ -262,8 +262,11 @@
           }
       }
       ```
+
 1. 반격
     - 구상: 막기/패링 성공 후 타이머 시간 내에 공격
+      - 적의 공격을 막았을 때 -> bCanCounter = true 설정 및 CanCounterTimer 작동
+      - /* 이미지 */
       ```cpp
       // SlashCharacter.cpp
       float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -283,6 +286,24 @@
 
       }
       ```
+      - bCanCounter -> True: 반격 / False: 일반 공격
+      ```cpp
+      // SlashCharacter.cpp
+      void ASlashCharacter::Attack()
+      {
+          ...
+
+          if (CanAttack())
+          {
+              // True -> 반격
+              // False -> 일반 공격
+              bCanCounter ? Counter() : PlayAttackMontage();
+          }
+      }
+      ```
+      - 결과
+      - /* 영상 */
+    
 1. 적의 시야, 소리 감지
     - 구상: PawnSensingComponent / AIPerceptionComponent를 활용하여 적의 시야 / 소리 감지
       ```cpp
