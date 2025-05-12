@@ -306,6 +306,7 @@
     
 1. 적의 시야, 소리 감지
     - 구상: PawnSensingComponent / AIPerceptionComponent를 활용하여 적의 시야 / 소리 감지
+      - PawnSensingComponent / AIPerceptionComponent 생성 및 초기화
       ```cpp
       // Enemy.cpp
       AEnemy::AEnemy()
@@ -323,7 +324,10 @@
           AIPerception->ConfigureSense(*HearingConfig);
       }
       ```
-
+      - /* 이미지 */
+      - PawnSensing / AIPerception 호출 함수 등록
+        - PawnSeing->OnSeePawn에 AEnemy::PawnSeen 함수 등록
+        - AIPerception->OnTargetPerceptionUpdated에 AEnemy::SeneNoise 함수 등록
       ```cpp
       // Enemy.cpp
       void AEnemy::BeginPlay()
@@ -342,7 +346,7 @@
           }
       }
       ```
-
+      - PawnSeen 함수
       ```cpp
       // Enemy.cpp
       void AEnemy::PawnSeen(APawn* SeenPawn)
@@ -369,7 +373,9 @@
           }
       }
       ```
-
+      - 결과
+      - /* 영상 */
+      - SenseNoise 함수
       ```cpp
       // Enemy.cpp
       void AEnemy::SenseNoise(AActor* NoiseActor, FAIStimulus Stimulus)
@@ -381,8 +387,16 @@
           LocationSearched = NoiseActor->GetActorLocation();
       }
       ```
+      - 결과
+      - /* 영상 */
 1. 적의 공격 모션 워핑(Motion Warping)
     - 구상: 적의 Attack Animation 중 무기의 Collision이 활성화 되기 전에 플레이어를 바라보는 Motion Warping 넣기
+      - Motion Warping Track 추가
+      - /* 이미지 */
+      - Motion Warping Translation
+      - /* Translation 이미지 */
+      - Motion Warping Translation 거리 계산
+      - /* 거리 이미지 */
       ```cpp
       // BaseCharacter.cpp
       FVector ABaseCharacter::GetTranslationWarpTarget()
@@ -400,7 +414,9 @@
           return CombatTargetLocation + TargetToMe;
       }
       ```
-
+      - /* Notify Blueprint 이미지 */
+      - Motion Warping Rotation
+      - /* Rotation 이미지 */
       ```cpp
       // BaseCharacter.cpp
       FVector ABaseCharacter::GetRotationWarpTarget()
@@ -414,5 +430,8 @@
           return FVector();
       }
       ```
+      - /* Notify Blueprint 이미지 */
+      - 결과
+      - /* 영상 */
 
 ## 마무리
