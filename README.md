@@ -81,7 +81,8 @@
    - 연속 공격
      - AttackMontageSections 배열에 AttackMontage SectionName 등록
      - 캐릭터 생성될 때 CurrentCombo = 0 초기화
-     - /* 이미지 */
+       
+     ![연속 공격1](https://github.com/wowhyuck/Slash/blob/main/github_assets/02_01_%EC%97%B0%EC%86%8D%EA%B3%B5%EA%B2%A91.png)  
      ```cpp
      // SlashCharacter.cpp
      int32 ASlashCharacter::PlayAttackMontage()
@@ -94,7 +95,8 @@
      - Attack Animation 끝날 때(AttackEnd), ResetComboTimer 작동
        - ResetComboTime 안에 공격: CurrentCombo + 1 -> 다음 Section Attack Animation 재생
        - ResetcomboTime 뒤에 공격 || CurrentCombo가 마지막 공격: CurrentCombo = 0 -> AttackMontageSections[0] Animation 재생
-       - /* 이미지 */
+         
+     ![연속 공격2](https://github.com/wowhyuck/Slash/blob/main/github_assets/02_01_%EC%97%B0%EC%86%8D%EA%B3%B5%EA%B2%A92.png)
      ```cpp
      // SlashCharacter.cpp
      void ASlashCharacter::AttackEnd()
@@ -114,7 +116,8 @@
 1. 피격 방향에 따라 HitReact
     - 구상: 캐릭터 Forward Vector 기준으로 ImpactPoint 지점 각도에 따라 HitReact Montage 재생
       - 캐릭터 Forward Vector와 캐릭터->ImpactPoint Vector와의 각도(Theata) 구하기
-      - /* 이미지 */
+        
+      ![HitReact](https://github.com/wowhyuck/Slash/blob/main/github_assets/02_02_HitReact.png)
       ```cpp
       // BaseCharacter.cpp
       double ABaseCharacter::GetThetaImpactPoint(const FVector& ImpactPoint)
@@ -178,7 +181,8 @@
 1. 막기(Blocking)
     - 구상: Blocking 상태일 때 피격 각도에 따라 Blocking 성공 여부
       - 막기 가능(-105 ~ 105) 범위 설정
-      - /* 이미지 */
+        
+      ![막기](https://github.com/wowhyuck/Slash/blob/main/github_assets/02_03_%EB%A7%89%EA%B8%B0.png)
       ```cpp
       // BaseCharacter.cpp
       bool ABaseCharacter::IsFront(const FVector& ImpactPoint)
@@ -225,7 +229,8 @@
       - ParryEnd Notify 기준
         - ParryEnd 전 막기 성공 -> 패링
         - ParryEnd 후 막기 성공 -> 기본 막기
-      - /* 이미지 */
+          
+      ![패링](https://github.com/wowhyuck/Slash/blob/main/github_assets/02_04_%ED%8C%A8%EB%A7%81.png)
       ```cpp
       // SlashCharacter.cpp
       void ASlashCharacter::Block()
@@ -266,7 +271,8 @@
 1. 반격
     - 구상: 막기/패링 성공 후 타이머 시간 내에 공격
       - 적의 공격을 막았을 때 -> bCanCounter = true 설정 및 CanCounterTimer 작동
-      - /* 이미지 */
+        
+      ![반격](https://github.com/wowhyuck/Slash/blob/main/github_assets/02_05_%EB%B0%98%EA%B2%A9.png)
       ```cpp
       // SlashCharacter.cpp
       float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
