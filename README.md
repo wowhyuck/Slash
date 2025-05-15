@@ -330,7 +330,8 @@
           AIPerception->ConfigureSense(*HearingConfig);
       }
       ```
-      - /* 이미지 */
+      
+      ![적시야소리](https://github.com/wowhyuck/Slash/blob/main/github_assets/02_06_%EC%A0%81%EC%8B%9C%EC%95%BC%EC%86%8C%EB%A6%AC.png)
       - PawnSensing / AIPerception 호출 함수 등록
         - PawnSeing->OnSeePawn에 AEnemy::PawnSeen 함수 등록
         - AIPerception->OnTargetPerceptionUpdated에 AEnemy::SeneNoise 함수 등록
@@ -396,13 +397,9 @@
       - 결과
       - /* 영상 */
 1. 적의 공격 모션 워핑(Motion Warping)
-    - 구상: 적의 Attack Animation 중 무기의 Collision이 활성화 되기 전에 플레이어를 바라보는 Motion Warping 넣기
-      - Motion Warping Track 추가
-      - /* 이미지 */
-      - Motion Warping Translation
-      - /* Translation 이미지 */
-      - Motion Warping Translation 거리 계산
-      - /* 거리 이미지 */
+    - 구상: 적의 Attack Montage에 무기의 Collision이 활성화 되기 전에 플레이어를 바라보는 Motion Warping 넣기
+      
+      ![모션워핑1](https://github.com/wowhyuck/Slash/blob/main/github_assets/02_07_%EB%AA%A8%EC%85%98%EC%9B%8C%ED%95%911.png)
       ```cpp
       // BaseCharacter.cpp
       FVector ABaseCharacter::GetTranslationWarpTarget()
@@ -420,9 +417,6 @@
           return CombatTargetLocation + TargetToMe;
       }
       ```
-      - /* Notify Blueprint 이미지 */
-      - Motion Warping Rotation
-      - /* Rotation 이미지 */
       ```cpp
       // BaseCharacter.cpp
       FVector ABaseCharacter::GetRotationWarpTarget()
@@ -436,7 +430,9 @@
           return FVector();
       }
       ```
-      - /* Notify Blueprint 이미지 */
+      - Notify에 GetWarpTarget 함수 연결
+        
+      ![모션워핑2](https://github.com/wowhyuck/Slash/blob/main/github_assets/02_07_%EB%AA%A8%EC%85%98%EC%9B%8C%ED%95%912.png)
       - 결과
       - /* 영상 */
 
