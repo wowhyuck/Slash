@@ -112,7 +112,9 @@
      }
      ```
      - 결과
-     -  /* 공격 영상 */
+     
+     ![ComboAttack](https://github.com/wowhyuck/Slash/blob/main/github_assets/gif/%EC%97%B0%EC%86%8D%EA%B3%B5%EA%B2%A9.gif)
+   
 1. 피격 방향에 따라 HitReact
     - 구상: 캐릭터 Forward Vector 기준으로 ImpactPoint 지점 각도에 따라 HitReact Montage 재생
       - 캐릭터 Forward Vector와 캐릭터->ImpactPoint Vector와의 각도(Theata) 구하기
