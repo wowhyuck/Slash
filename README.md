@@ -75,8 +75,6 @@
          }
      }
      ```
-     - 결과
-     -  /* 공격 영상 */
 
    - 연속 공격
      - AttackMontageSections 배열에 AttackMontage SectionName 등록
@@ -111,9 +109,10 @@
          CurrentCombo = (CurrentCombo == MaxCombo) ? 0 : FMath::Clamp(CurrentCombo + 1, 0, MaxCombo);
      }
      ```
-     - 결과
+     - 결과 ( 공격 / 연속공격 )
      
-     ![ComboAttack](https://github.com/wowhyuck/Slash/blob/main/github_assets/gif/%EC%97%B0%EC%86%8D%EA%B3%B5%EA%B2%A9.gif)
+     |![공격](https://github.com/wowhyuck/Slash/blob/main/github_assets/gif/01_%EA%B3%B5%EA%B2%A9.gif)|![연속공격](https://github.com/wowhyuck/Slash/blob/main/github_assets/gif/01_%EC%97%B0%EC%86%8D%EA%B3%B5%EA%B2%A9.gif)|
+     |---|---|
    
 1. 피격 방향에 따라 HitReact
     - 구상: 캐릭터 Forward Vector 기준으로 ImpactPoint 지점 각도에 따라 HitReact Montage 재생
@@ -177,8 +176,11 @@
           PlayHitReactMontage(Section);
       }
       ```
-      - 결과
-      - /* 영상 */
+      - 결과 ( Front / Back / Left / Right )
+    
+      |![Front](https://github.com/wowhyuck/Slash/blob/main/github_assets/gif/02_HitReact_Front.gif)|![Back](https://github.com/wowhyuck/Slash/blob/main/github_assets/gif/02_HitReact_Back.gif)|
+      |---|---|
+      |![Left](https://github.com/wowhyuck/Slash/blob/main/github_assets/gif/02_HitReact_Left.gif)|![Right](https://github.com/wowhyuck/Slash/blob/main/github_assets/gif/02_HitReact_Right.gif)|
 
 1. 막기(Blocking)
     - 구상: Blocking 상태일 때 피격 각도에 따라 Blocking 성공 여부
@@ -269,6 +271,10 @@
           }
       }
       ```
+      - 결과 ( 막기 / 패링 )
+      
+      |![막기](https://github.com/wowhyuck/Slash/blob/main/github_assets/gif/03_%EB%A7%89%EA%B8%B0.gif)|![패링](https://github.com/wowhyuck/Slash/blob/main/github_assets/gif/03_%ED%8C%A8%EB%A7%81.gif)|
+      |---|---|
 
 1. 반격
     - 구상: 막기/패링 성공 후 타이머 시간 내에 공격
@@ -310,7 +316,9 @@
       }
       ```
       - 결과
-      - /* 영상 */
+
+      |![막기반격](https://github.com/wowhyuck/Slash/blob/main/github_assets/gif/05_%EB%A7%89%EA%B8%B0%EB%B0%98%EA%B2%A9.gif)|![패링반격](https://github.com/wowhyuck/Slash/blob/main/github_assets/gif/05_%ED%8C%A8%EB%A7%81%EB%B0%98%EA%B2%A9.gif)|
+      |---|---|
     
 1. 적의 시야, 소리 감지
     - 구상: PawnSensingComponent / AIPerceptionComponent를 활용하여 적의 시야 / 소리 감지
@@ -382,8 +390,7 @@
           }
       }
       ```
-      - 결과
-      - /* 영상 */
+
       - SenseNoise 함수
       ```cpp
       // Enemy.cpp
@@ -396,8 +403,11 @@
           LocationSearched = NoiseActor->GetActorLocation();
       }
       ```
-      - 결과
-      - /* 영상 */
+      - 결과 ( 시야 감지 / 소리 감지 )
+
+      |![시야](https://github.com/wowhyuck/Slash/blob/main/github_assets/gif/06_%EC%8B%9C%EC%95%BC.gif)|![소리](https://github.com/wowhyuck/Slash/blob/main/github_assets/gif/06_%EC%86%8C%EB%A6%AC.gif)|
+      |---|---|
+      
 1. 적의 공격 모션 워핑(Motion Warping)
     - 구상: 적의 Attack Montage에 무기의 Collision이 활성화 되기 전에 플레이어를 바라보는 Motion Warping 넣기
       
@@ -436,7 +446,8 @@
         
       ![모션워핑2](https://github.com/wowhyuck/Slash/blob/main/github_assets/02_07_%EB%AA%A8%EC%85%98%EC%9B%8C%ED%95%912.png)
       - 결과
-      - /* 영상 */
+
+      ![모션워핑](https://github.com/wowhyuck/Slash/blob/main/github_assets/gif/07_%EB%AA%A8%EC%85%98%EC%9B%8C%ED%95%91.gif)
 
 ## 마무리
 이상으로 3인칭 액션RPG을 언리얼 엔진5.0버전으로 C++과 블루프린트 활용해서 만들었습니다.
